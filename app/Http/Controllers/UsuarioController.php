@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
@@ -17,6 +18,9 @@ class UsuarioController extends Controller
         if ($request->isJson()){
             $usuarioPost = $request->input();
             $usuarioDB = new Usuario;
+            if (isset($usuarioPost['password'])) {
+                $usuarioPost['password'] = Hash::make($usuarioPost['password']);
+            }
             $usuarioDB = $usuarioDB -> fill($usuarioPost);
             $ok = $usuarioDB->save();
         }
@@ -44,9 +48,13 @@ class UsuarioController extends Controller
         $usuarioDB = $usuario;
         if ($usuarioDB && $request->isJson()){
             $usuarioPost = $request->input();
+            if (isset($usuarioPost['password'])) {
+                $usuarioPost['password'] = Hash::make($usuarioPost['password']);
+                var_dump($usuarioPost['password']);
+            }
             $ok = $usuarioDB->update($usuarioPost);
         }
 
-        return $ok ? json_encode($usuarioDB) : "Error al actualizar el usuario";
+        return $ok ? json_encode(Usuario::find($usuario['id'])) : "Error al actualizar el usuario";
     }
 }

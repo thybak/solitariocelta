@@ -15,12 +15,12 @@ class Usuario extends Authenticatable
     protected $table = 'usuarios';
 
     protected $hidden = [
-        'clavePaso'
+        'password'
     ];
 
     protected $attributes = ['habilitado' => true, 'esAdmin' => false];
 
     //protected $guarded = ['id'];
 
-    protected $fillable = ['nombreUsuario', 'clavePaso', 'email', 'habilitado', 'esAdmin'];
+    protected $fillable = ['nombreUsuario', 'password', 'email', 'habilitado', 'esAdmin'];
 }
