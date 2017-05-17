@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Utils;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -11,16 +12,13 @@ class LoginController extends Controller
     {
         $credenciales = $request->only('email', 'password');
         try {
-            // attempt to verify the credentials and create a token for the user
             if (!$token = JWTAuth::attempt($credenciales)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);
             }
         } catch (JWTException $e) {
-            // something went wrong whilst attempting to encode the token
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json(Utils::ERROR_500, Utils::ERROR_500['code']);
         }
 
-        // all good so return the token
         return response()->json(compact('token'));
     }
 }

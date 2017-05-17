@@ -20,7 +20,5 @@ class Usuario extends Authenticatable
 
     protected $attributes = ['habilitado' => true, 'esAdmin' => false];
 
-    //protected $guarded = ['id'];
-
     protected $fillable = ['nombreUsuario', 'password', 'email', 'habilitado', 'esAdmin'];
 }
