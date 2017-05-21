@@ -10,7 +10,7 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $credenciales = $request->only('email', 'password');
+        $credenciales = $request->only('nombreUsuario', 'password');
         try {
             if (!$token = JWTAuth::attempt($credenciales)) {
                 return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);

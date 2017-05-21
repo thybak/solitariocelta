@@ -10,36 +10,44 @@ use JWTAuth;
 
 class UsuarioController extends Controller
 {
-
-    private function obtenerUsuarioLogeado(): Usuario
+    /**
+     * Determina si el usuario recibido en el cuerpo de la petición tiene permisos para modificar propiedades de administración
+     * @param $usuarioPost
+     * @return bool
+     */
+    private function permisosParaPropiedadAdmin($usuarioPost): bool
     {
-        return JWTAuth::parseToken()->authenticate();
-    }
-
-    private function checkPermisos(Int $id): bool
-    {
-        $usuarioLogeado = $this->obtenerUsuarioLogeado();
-        return $usuarioLogeado != null && ($usuarioLogeado->esAdmin || ($usuarioLogeado->id == $id));
-    }
-
-    private function permisosParaPropiedadAdmin($usuarioPost)
-    {
-        $usuarioLogeado = $this->obtenerUsuarioLogeado();
+        $usuarioLogeado = Utils::obtenerUsuarioLogeado();
         $usuarioPostDB = (new Usuario())->fill($usuarioPost);
         return $usuarioLogeado != null && (($usuarioLogeado->esAdmin && $usuarioPostDB->esAdmin) || !$usuarioPostDB->esAdmin);
     }
 
+    /**
+     * Comprueba si el cuerpo de la petición tiene campos únicos válidos de cara a los registros de la base de datos
+     * @param $usuarioPost
+     * @return bool
+     */
     private function camposUnicosValidos($usuarioPost): bool
     {
         $usuarioDB = Usuario::where('nombreUsuario', $usuarioPost['nombreUsuario'])->orwhere('email', $usuarioPost['email'])->first();
         return $usuarioDB == null;
     }
 
+    /**
+     * Determina si los campos obligatorios de la entidad están presentes o no
+     * @param $usuarioPost
+     * @return bool
+     */
     private function camposObligatoriosPresentes($usuarioPost): bool
     {
         return isset($usuarioPost['nombreUsuario']) && isset($usuarioPost['password']) && isset($usuarioPost['email']);
     }
 
+    /**
+     * Hashea la contraseña del usuario que se ha recibido en el cuerpo de la petición en caso de que exista
+     * @param $usuarioPost
+     * @return mixed
+     */
     private function setPasswordHasheada($usuarioPost)
     {
         if (isset($usuarioPost['password'])) {
@@ -48,15 +56,23 @@ class UsuarioController extends Controller
         return $usuarioPost;
     }
 
+    /**
+     * Obtiene todos los usuarios del sistema
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function obtenerTodos()
     {
-        $usuario = JWTAuth::parseToken()->authenticate();
-        if ($usuario && $usuario->esAdmin) {
+        if (Utils::usuarioLogeadoEsAdmin()) {
             return response()->json(['usuarios' => Usuario::all()], 200);
         }
         return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
     }
 
+    /**
+     * Crea un nuevo usuario en la base de datos a partir del cuerpo de la petición
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function crear(Request $request)
     {
         $usuarioPost = $request->input();
@@ -78,9 +94,14 @@ class UsuarioController extends Controller
         return response()->json($usuarioDB, 201);
     }
 
+    /**
+     * Obtiene el usuario por su identificador
+     * @param Int $usuario
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function obtener(Int $usuario)
     {
-        $tienePermiso = $this->checkPermisos($usuario);
+        $tienePermiso = Utils::checkPermisos($usuario);
         if (!$tienePermiso) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
@@ -91,9 +112,14 @@ class UsuarioController extends Controller
         return response()->json($usuarioDB, 200);
     }
 
+    /**
+     * Borrar el usuario a partir de su identificador tras comprobaciones previas
+     * @param Int $usuario
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function borrar(Int $usuario)
     {
-        $tienePermiso = $this->checkPermisos($usuario);
+        $tienePermiso = Utils::checkPermisos($usuario);
         if (!$tienePermiso) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
@@ -107,9 +133,15 @@ class UsuarioController extends Controller
         return response()->json([], 204);
     }
 
+    /**
+     * Actualiza el registro asociado al identificador de usuario a partir del cuerpo de la petición
+     * @param Int $usuario
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function actualizar(Int $usuario, Request $request)
     {
-        $tienePermiso = $this->checkPermisos($usuario);
+        $tienePermiso = Utils::checkPermisos($usuario);
         $usuarioPost = $request->input();
         $usuarioPost = $this->setPasswordHasheada($usuarioPost);
         if (!$tienePermiso || !$this->permisosParaPropiedadAdmin($usuarioPost)) {

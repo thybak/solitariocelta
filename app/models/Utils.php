@@ -7,7 +7,7 @@
  */
 
 namespace App\Models;
-
+use JWTAuth;
 
 class Utils
 {
@@ -16,4 +16,45 @@ class Utils
     const ERROR_403 = ['code' => 403, 'message' => 'Este usuario no tiene autorización para realizar esta acción'];
     const USER_ERROR_400 = ['code' => 400, 'message' => 'El email o el nombre de usuario ya existen en la BBDD'];
     const USER_ERROR_422 = ['code' => 422, 'message' => 'Falta el nombre de usuario, email o contraseña en la entidad'];
+    const RES_ERROR_422 = ['code' => 422, 'message' => 'Falta el identificador de usuario o la puntuación de la partida'];
+    const PAR_ERROR_422 = ['code' => 422, 'message' => 'Falta el identificador de usuario o el estado de la partida'];
+
+    /**
+     * Devuelve el usuario que está autenticado actualmente a partir del token de sesión haciendo uso de la fachada JWTAuth
+     * @return Usuario
+     */
+    public static function obtenerUsuarioLogeado(): Usuario
+    {
+        return JWTAuth::parseToken()->authenticate();
+    }
+    /**
+     * Determina si el usuario tiene permisos suficientes para realizar una operación
+     * @param Int $id
+     * @return bool
+     */
+    public static function checkPermisos(Int $id): bool
+    {
+        $usuarioLogeado = Utils::obtenerUsuarioLogeado();
+        return $usuarioLogeado != null && ($usuarioLogeado->esAdmin || ($usuarioLogeado->id == $id));
+    }
+    /**
+     * Determina si el usuario autenticado es administrador o no
+     * @return bool
+     */
+    public static function usuarioLogeadoEsAdmin(): bool
+    {
+        $usuarioLogeado = Utils::obtenerUsuarioLogeado();
+        return $usuarioLogeado != null && $usuarioLogeado -> esAdmin;
+    }
+
+    /**
+     * Comprueba que el identificador de usuario que se ha enviado se corresponde con el de algún usuario existente
+     * @param $id
+     * @return bool
+     */
+    public static function usuarioValido($id): bool
+    {
+        $usuarioDB = \App\Models\Usuario::find($id);
+        return $usuarioDB != null;
+    }
 }
