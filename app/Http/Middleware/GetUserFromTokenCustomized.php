@@ -19,10 +19,12 @@ class GetUserFromTokenCustomized extends BaseMiddleware
      * @param  array    $payload
      * @return mixed
      */
-    protected function respond($event, $error, $status, $payload = [])
+    protected function respond($event, $error, $status, $payload = [], $pathRequest = "")
     {
         $response = $this->events->fire($event, $payload, true);
-
+        if (strpos($pathRequest, 'api/') === false){
+            return $response ?: redirect('/');
+        }
         return $response ?: $this->response->json(['code' => $status,'message' => $error], $status);
     }
     /**
@@ -35,11 +37,16 @@ class GetUserFromTokenCustomized extends BaseMiddleware
     public function handle($request, \Closure $next)
     {
         if (! $token = $this->auth->setRequest($request)->getToken()) {
-            return $this->respond('tymon.jwt.absent',self::ERROR_401.self::ERROR_401_SUBTIPO[0] , 401);
+            if (! $token = $request->cookie('token')) {
+                return $this->respond('tymon.jwt.absent', self::ERROR_401 . self::ERROR_401_SUBTIPO[0], 401, [], $request->path());
+            }
         }
-
         try {
             $user = $this->auth->authenticate($token);
+            if (strpos($request->path(), 'admin') !== false && !$user->esAdmin){
+                return redirect('/user');
+            }
+            $request->request->add(['usuarioAuth' => $user]);
         } catch (TokenExpiredException $e) {
             return $this->respond('tymon.jwt.expired', self::ERROR_401.self::ERROR_401_SUBTIPO[1], 401, [$e]);
         } catch (JWTException $e) {

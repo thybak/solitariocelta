@@ -40,7 +40,8 @@ class UsuarioController extends Controller
      */
     private function camposObligatoriosPresentes($usuarioPost): bool
     {
-        return isset($usuarioPost['nombreUsuario']) && isset($usuarioPost['password']) && isset($usuarioPost['email']);
+        return isset($usuarioPost['nombreUsuario']) && isset($usuarioPost['password']) && isset($usuarioPost['email'])
+            && isset($usuarioPost['nombre']) && isset($usuarioPost['apellidos']) && isset($usuarioPost['telefono']);
     }
 
     /**
@@ -69,6 +70,18 @@ class UsuarioController extends Controller
     }
 
     /**
+     * Obtiene todos los usuarios deshabilitados del sistema
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function obtenerTodosLosDeshabilitados()
+    {
+        if (Utils::usuarioLogeadoEsAdmin()) {
+            return response()->json(['usuarios' => Usuario::where('habilitado', '=', false)->get()], 200);
+        }
+        return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
+    }
+
+    /**
      * Crea un nuevo usuario en la base de datos a partir del cuerpo de la petición
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -88,6 +101,7 @@ class UsuarioController extends Controller
         $usuarioDB = new Usuario;
         $usuarioPost = $this->setPasswordHasheada($usuarioPost);
         $usuarioDB = $usuarioDB->fill($usuarioPost);
+        $usuarioDB -> habilitado = false;
         if (!$usuarioDB->save()) {
             return response()->json(Utils::ERROR_500, Utils::ERROR_500['code']);
         }

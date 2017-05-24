@@ -15,6 +15,9 @@ class LoginController extends Controller
             if (!$token = JWTAuth::attempt($credenciales)) {
                 return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);
             }
+            if (!Utils::esTokenDeUsuarioHabilitado($token)){
+                return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
+            }
         } catch (JWTException $e) {
             return response()->json(Utils::ERROR_500, Utils::ERROR_500['code']);
         }

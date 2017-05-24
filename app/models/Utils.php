@@ -15,7 +15,7 @@ class Utils
     const ERROR_404 = ['code' => 404, 'message' => 'No se ha encontrado la entidad que se buscaba'];
     const ERROR_403 = ['code' => 403, 'message' => 'Este usuario no tiene autorización para realizar esta acción'];
     const USER_ERROR_400 = ['code' => 400, 'message' => 'El email o el nombre de usuario ya existen en la BBDD'];
-    const USER_ERROR_422 = ['code' => 422, 'message' => 'Falta el nombre de usuario, email o contraseña en la entidad'];
+    const USER_ERROR_422 = ['code' => 422, 'message' => 'Falta el nombre de usuario, email, contraseña, nombre, apellidos o teléfono en la entidad'];
     const RES_ERROR_422 = ['code' => 422, 'message' => 'Falta el identificador de usuario o la puntuación de la partida'];
     const PAR_ERROR_422 = ['code' => 422, 'message' => 'Falta el identificador de usuario o el estado de la partida'];
 
@@ -35,7 +35,7 @@ class Utils
     public static function checkPermisos(Int $id): bool
     {
         $usuarioLogeado = Utils::obtenerUsuarioLogeado();
-        return $usuarioLogeado != null && ($usuarioLogeado->esAdmin || ($usuarioLogeado->id == $id));
+        return $usuarioLogeado != null && $usuarioLogeado->habilitado && ($usuarioLogeado->esAdmin || ($usuarioLogeado->id == $id));
     }
     /**
      * Determina si el usuario autenticado es administrador o no
@@ -44,7 +44,7 @@ class Utils
     public static function usuarioLogeadoEsAdmin(): bool
     {
         $usuarioLogeado = Utils::obtenerUsuarioLogeado();
-        return $usuarioLogeado != null && $usuarioLogeado -> esAdmin;
+        return $usuarioLogeado != null && $usuarioLogeado -> esAdmin && $usuarioLogeado -> habilitado;
     }
 
     /**
@@ -52,9 +52,38 @@ class Utils
      * @param $id
      * @return bool
      */
-    public static function usuarioValido($id): bool
+    public static function usuarioValido(Int $id): bool
     {
         $usuarioDB = \App\Models\Usuario::find($id);
         return $usuarioDB != null;
+    }
+
+    /**
+     * Comprueba que el token que se pasa por parámetro se corresponde al de un usuario administrador
+     * @param string $token
+     * @return bool
+     */
+    public static function esTokenDeUsuarioAdmin(string $token): bool {
+        $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
+        return $usuarioDB != null && $usuarioDB -> esAdmin && $usuarioDB -> habilitado;
+    }
+
+    /**
+     * Comprueba que el token que se pasa por parámetro se corresponde al de un usuario habilitado
+     * @param string $token
+     * @return bool
+     */
+    public static function esTokenDeUsuarioHabilitado(string $token){
+        $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
+        return $usuarioDB != null && $usuarioDB -> habilitado;
+    }
+
+    /**
+     * Genera una vista a partir de su ruta y añadiendo el usuario autenticando en el momento
+     * @param string $ruta
+     * @return view
+     */
+    public static function generarVistaAdministrador(string $ruta, $request){
+        return view($ruta)->with('usuarioAuth', $request->only('usuarioAuth')['usuarioAuth']);
     }
 }

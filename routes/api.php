@@ -17,9 +17,10 @@ const RUTA_RESULTADOS = '/results';
 const RUTA_PARTIDAS = '/matches';
 
 Route::post('/login', 'LoginController@login');
+Route::post(RUTA_USUARIOS, 'UsuarioController@crear');
 Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get(RUTA_USUARIOS, 'UsuarioController@obtenerTodos');
-    Route::post(RUTA_USUARIOS, 'UsuarioController@crear');
+    Route::get(RUTA_USUARIOS.'/deshabilitados', 'UsuarioController@obtenerTodosLosDeshabilitados');
     Route::get(RUTA_USUARIOS.'/{usuario}', 'UsuarioController@obtener');
     Route::delete(RUTA_USUARIOS.'/{usuario}', 'UsuarioController@borrar');
     Route::put(RUTA_USUARIOS.'/{usuario}', 'UsuarioController@actualizar');

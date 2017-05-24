@@ -1,0 +1,51 @@
+body{
+    /*background-color: #111;*/
+}
+.hdn {
+    display: none;
+}
+.mgn-top-3 {
+    margin-top: 3em;
+}
+.lineaTablero{
+    margin: 0;
+    padding: 0;
+}
+#tablero img {
+    margin-top: -0.35em;
+    width: 5.5%;
+    height: auto;
+}
+
+#informacionJuego,
+#modoJuego,
+#modoSituar,
+#guardarEstado,
+#registroPuntuacion {
+    display: none;
+}
+#tablero,
+.txt-center {
+    text-align: center;
+}
+#tablero {
+    background-color: #f1f1f1;
+    border-radius: 2em;
+    border: 2px solid lightblue;
+}
+#puntuacion[type="text"]{
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: .7;
+}
+#puntuacion.puntuacionEnPositivo[type="text"] {
+    border: 1px solid green;
+    color: green ;
+}
+#puntuacion.puntuacionEnNegativo[type="text"] {
+    border: 1px solid red;
+    color: red;
+}
+#txtMaxSegundos.w25[type="text"]{
+    width: 25%;
+}

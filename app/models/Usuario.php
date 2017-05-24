@@ -22,7 +22,7 @@ class Usuario extends Authenticatable
      * Atributos con valores por defecto
      * @var array
      */
-    protected $attributes = ['habilitado' => true, 'esAdmin' => false];
+    protected $attributes = ['habilitado' => false, 'esAdmin' => false];
     /**
      * Atributos rellenables desde el método fill() génerico de los modelos
      * @var array
