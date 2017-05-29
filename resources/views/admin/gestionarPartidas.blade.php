@@ -12,8 +12,7 @@
                     <th>Usuario</th>
                     <th>Estado de la partida</th>
                     <th>Fecha de creación</th>
-                    <th>Actualizar</th>
-                    <th>¿Eliminar?</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -22,6 +21,6 @@
         </div>
     </div>
     <script>
-        utils.getPartidas();
+        document.onload = utils.getPartidas();
     </script>
 @endsection

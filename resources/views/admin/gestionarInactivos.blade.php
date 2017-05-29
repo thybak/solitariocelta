@@ -21,6 +21,6 @@
     </div>
     <button type="button" onclick="utils.activarDesactivarUsuario(_id_, 1, utils.ocultarCelda, this)" id="btnActivarTemplate" class="hdn">Habilitar</button>
     <script>
-        utils.getInactivos();
+        document.onload = utils.getInactivos();
     </script>
 @endsection

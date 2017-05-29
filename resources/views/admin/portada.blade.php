@@ -3,7 +3,7 @@
 @section('menu')
     <div class="ui attached stackable menu">
         <a class="item" href="/admin">
-            <h1 class="ui header"><i class="game icon"></i> Solitario celta (TDW 16-17) <br />- Administración</h1>
+            <h1 class="ui header"><i class="game icon"></i> Solitario celta (TDW 16-17) - Administración</h1>
         </a>
         <a class="item" href="{!! url('/admin/gestionarInactivos') !!}">
             <i class="move icon"></i> Gestionar usuarios inactivos

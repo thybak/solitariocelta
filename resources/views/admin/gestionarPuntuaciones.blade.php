@@ -12,8 +12,7 @@
                         <th>Usuario</th>
                         <th>Puntuación</th>
                         <th>Fecha</th>
-                        <th>Actualizar</th>
-                        <th>¿Eliminar?</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -21,6 +20,6 @@
         </div>
     </div>
     <script>
-        utils.getPuntuaciones();
+        document.onload = utils.getPuntuaciones();
     </script>
 @endsection
