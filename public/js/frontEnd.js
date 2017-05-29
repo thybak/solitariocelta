@@ -25,8 +25,12 @@ FrontEndUtils.prototype.rellenarTabla = function (rows, cols, id) {
         for (var col = 1; col < cols.length; col++){
             row.append($('<td>').append(rows[idx][cols[col]]));
         }
-        $(id).append(row);
+        $(id).find("tbody").append(row);
     }
+}
+
+FrontEndUtils.prototype.limpiarTabla = function (id){
+    $(id).find('tbody').find('tr').each(function() { $(this).remove()});
 }
 
 FrontEndUtils.prototype.ocultarCelda = function(oBtn){
@@ -90,6 +94,87 @@ FrontEndUtils.prototype.getInactivos = function () {
         function (respuesta) {
             console.log(respuesta);
         }, sessionStorage.getItem('token'));
+}
+
+FrontEndUtils.prototype.getTop10 = function() {
+    var peticionTop = {
+        "fechaInicio": $("#txtFechaInicio").val(),
+        "fechaFin": $("#txtFechaFin").val()
+    };
+
+    this.peticionAjax('/api/results/top10', 'POST', peticionTop, 
+    function (respuesta){
+        if (respuesta.resultados !== undefined){
+            utils.limpiarTabla('#lineas');
+            utils.rellenarTabla(respuesta.resultados, ['puntos', 'fechaCreacion', 'usuarioId'], '#lineas');
+        } else {
+            alert("No se han obtenido resultados");
+        }
+    },
+    function (respuesta){
+        console.log(respuesta);
+    }, sessionStorage.getItem('token'));
+}
+
+FrontEndUtils.prototype.getUsuarios = function(){
+    this.peticionAjax('/api/users', 'GET', {}, 
+    function(respuesta){
+        if (respuesta.usuarios !== undefined){
+            utils.rellenarTabla(respuesta.usuarios, ['nombreUsuario', 'email', '', 'nombre', 'apellidos', 'telefono', 'habilitado', 'esAdmin', '', ''], '#lineas');
+        }
+    },
+    function(respuesta){
+        console.log(respuesta);
+    }, sessionStorage.getItem('token'));
+}
+
+FrontEndUtils.prototype.getPuntuaciones = function(){
+    this.peticionAjax('/api/results', 'GET', {}, 
+    function(respuesta){
+        if (respuesta.resultados !== undefined){
+            utils.rellenarTabla(respuesta.resultados, ['usuarioId', 'puntos', 'fechaCreacion'], '#lineas');
+        }
+    },
+    function(respuesta){
+        console.log(respuesta);
+    }, sessionStorage.getItem('token'));
+}
+
+FrontEndUtils.prototype.getPartidas = function(){
+    this.peticionAjax('/api/matches', 'GET', {}, 
+    function(respuesta){
+        if (respuesta.partidas !== undefined){
+            utils.rellenarTabla(respuesta.partidas, ['usuarioId', 'estadoJson', 'fechaCreacion'], '#lineas');
+        }
+    },
+    function(respuesta){
+        console.log(respuesta);
+    }, sessionStorage.getItem('token'));
+}
+
+FrontEndUtils.prototype.registro = function() {
+    if ($("#password").val() === $("#passwordConfirmation").val()){
+        var peticionRegistro = {
+            nombreUsuario: $("#nombreUsuario").val(),
+            email: $("#email").val(),
+            password: $("#password").val()
+        };
+        this.peticionAjax('/api/users', 'POST', peticionRegistro,
+        function(respuesta){
+            if (respuesta !== undefined && respuesta.id > 0){
+                alert('El alta del usuario se ha realizado con éxito. El siguiente paso es que un administrador valide tu cuenta');
+            }
+            console.log(respuesta);
+        },
+        function(respuesta){
+            if (respuesta.status === 400){
+                alert('El usuario o email no son únicos en el sistema');
+            } else if (respuesta.status === 422){
+                alert('Nombre de usuario, email y contraseña son campos obligatorios en el registro');
+            }
+            console.log(respuesta.status);
+        }, sessionStorage.getItem('token'));
+    }
 }
 
 utils = new FrontEndUtils();

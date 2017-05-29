@@ -15,6 +15,7 @@
                     <th>¿Habilitar?</th>
                 </tr>
                 </thead>
+                <tbody></tbody>
             </table>
         </div>
     </div>

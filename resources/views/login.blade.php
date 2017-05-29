@@ -10,4 +10,5 @@
         <input type="password" id="password" name="password" required />
         <button type="button" onclick="utils.login()">Iniciar sesión</button>
     </form>
+    <p>¿Aún sin cuenta? <a href="{!! url('/signup') !!}">Regístrate</a>
 @endsection

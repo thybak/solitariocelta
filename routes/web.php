@@ -18,6 +18,9 @@ use \App\Models\Utils;
 Route::get('/', function () {
     return view('login');
 });
+Route::get('/signup', function() {
+    return view('registro');
+});
 Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/admin', function(Request $request) {
         return Utils::generarVistaAdministrador('admin.portada', $request);

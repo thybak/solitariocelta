@@ -25,11 +25,12 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::delete(RUTA_USUARIOS.'/{usuario}', 'UsuarioController@borrar');
     Route::put(RUTA_USUARIOS.'/{usuario}', 'UsuarioController@actualizar');
     Route::get(RUTA_RESULTADOS, 'ResultadoController@obtenerTodos');
-    Route::get(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@obtener');
+    Route::get(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@obtener')->where('resultado', '[0-9]+');
     Route::get(RUTA_RESULTADOS.'/user/{usuario}', 'ResultadoController@obtenerDeUsuario');
     Route::post(RUTA_RESULTADOS, 'ResultadoController@crear');
     Route::put(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@actualizar');
     Route::delete(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@borrar');
+    Route::post(RUTA_RESULTADOS.'/top10', 'ResultadoController@obtenerTop10');
     Route::get(RUTA_PARTIDAS, 'PartidaSinFinalizarController@obtenerTodos');
     Route::get(RUTA_PARTIDAS.'/{partida}', 'PartidaSinFinalizarController@obtener');
     Route::get(RUTA_PARTIDAS.'/user/{usuario}', 'PartidaSinFinalizarController@obtenerDeUsuario');

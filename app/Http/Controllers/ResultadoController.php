@@ -129,4 +129,20 @@ class ResultadoController extends Controller
         }
         return response()->json(['resultados' => Resultado::all()], 200);
     }
+
+    public function obtenerTop10(Request $request) {
+        if (!Utils::usuarioLogeadoEsAdmin()){
+            return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
+        }
+        $fechas = $request->input();
+        //$fechaInicio = $request->only('fechaInicio');
+        //$fechaFin = $request->only('fechaFin');
+        //var_dump($fechaInicio);
+        //var_dump($fechaFin);
+        $fechaInicio = strtotime($fechas['fechaInicio']);
+        $fechaFin = strtotime($fechas['fechaFin']);
+        // todo: el join con usuario para sacar datos del mismo.
+        $resultados = Resultado::whereDate('fechaCreacion', '>=', $fechaInicio)->orderByDesc('puntos')->take(10)->get();
+        return response()->json(['resultados' => $resultados], 200);
+    }
 }

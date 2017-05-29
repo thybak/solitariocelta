@@ -40,8 +40,7 @@ class UsuarioController extends Controller
      */
     private function camposObligatoriosPresentes($usuarioPost): bool
     {
-        return isset($usuarioPost['nombreUsuario']) && isset($usuarioPost['password']) && isset($usuarioPost['email'])
-            && isset($usuarioPost['nombre']) && isset($usuarioPost['apellidos']) && isset($usuarioPost['telefono']);
+        return isset($usuarioPost['nombreUsuario']) && isset($usuarioPost['password']) && isset($usuarioPost['email']);
     }
 
     /**
@@ -95,13 +94,15 @@ class UsuarioController extends Controller
         if (!$this->camposUnicosValidos($usuarioPost)) {
             return response()->json(Utils::USER_ERROR_400, Utils::USER_ERROR_400['code']);
         }
-        if (!$this->permisosParaPropiedadAdmin($usuarioPost)) {
+        // Ya no se requiere token de sesión para crear usuarios
+        /*if (!$this->permisosParaPropiedadAdmin($usuarioPost)) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
-        }
+        }*/
         $usuarioDB = new Usuario;
         $usuarioPost = $this->setPasswordHasheada($usuarioPost);
         $usuarioDB = $usuarioDB->fill($usuarioPost);
         $usuarioDB -> habilitado = false;
+        $usuarioDB -> esAdmin = false;
         if (!$usuarioDB->save()) {
             return response()->json(Utils::ERROR_500, Utils::ERROR_500['code']);
         }
