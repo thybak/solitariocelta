@@ -47,6 +47,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
         return view('user.perfil');
     });
     Route::get('/login', function (Request $request) {
-        return redirect('/user')->cookie('token', Input::get('token'), 0, "/", false);
+        Cookie::queue('token', Input::get('token'), 0, "/", false);
+        return redirect('/user');
     });
 });

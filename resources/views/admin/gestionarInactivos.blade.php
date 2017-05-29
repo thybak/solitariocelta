@@ -19,7 +19,7 @@
             </table>
         </div>
     </div>
-    <button type="button" onclick="utils.activarDesactivarUsuario(_id_, 1, utils.ocultarCelda, this)" id="btnActivarTemplate" class="hdn">Habilitar</button>
+    <button type="button" onclick="utils.activarDesactivarUsuario(_id_, 1, utils.ocultarCelda, this)" id="btnActivarTemplate" class="hdn"><i class="checkmark icon"></i> Habilitar</button>
     <script>
         document.onload = utils.getInactivos();
     </script>

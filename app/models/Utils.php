@@ -7,7 +7,6 @@
  */
 
 namespace App\Models;
-use JWTAuth;
 
 class Utils
 {
@@ -25,7 +24,9 @@ class Utils
      */
     public static function obtenerUsuarioLogeado(): Usuario
     {
-        return JWTAuth::parseToken()->authenticate();
+        try {
+            return \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
+        } catch (Exception $e){return null;}
     }
     /**
      * Determina si el usuario tiene permisos suficientes para realizar una operación
@@ -64,7 +65,10 @@ class Utils
      * @return bool
      */
     public static function esTokenDeUsuarioAdmin(string $token): bool {
-        $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
+        $usuarioDB = null;
+        try {
+            $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
+        } catch (Exception $e){}
         return $usuarioDB != null && $usuarioDB -> esAdmin && $usuarioDB -> habilitado;
     }
 
@@ -74,7 +78,10 @@ class Utils
      * @return bool
      */
     public static function esTokenDeUsuarioHabilitado(string $token){
-        $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
+        $usuarioDB = null;
+        try {
+            $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
+        } catch (Exception $e){}
         return $usuarioDB != null && $usuarioDB -> habilitado;
     }
 

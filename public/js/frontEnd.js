@@ -17,7 +17,7 @@ FrontEndUtils.prototype.peticionAjax = function (url, method, params, doneFn, fa
         peticion.fail(failFn);
     }
 
-}
+};
 
 FrontEndUtils.prototype.rellenarTabla = function (rows, cols, id) {
     for (var idx = 0; idx < rows.length; idx++) {
@@ -27,17 +27,17 @@ FrontEndUtils.prototype.rellenarTabla = function (rows, cols, id) {
         }
         $(id).find("tbody").append(row);
     }
-}
+};
 
 FrontEndUtils.prototype.limpiarTabla = function (id) {
     $(id).find('tbody').find('tr').each(function () {
         $(this).remove()
     });
-}
+};
 
 FrontEndUtils.prototype.ocultarCelda = function (oBtn) {
     $(oBtn).parent().parent().hide('slow');
-}
+};
 
 FrontEndUtils.prototype.login = function () {
     var peticionLogin = {
@@ -60,7 +60,7 @@ FrontEndUtils.prototype.login = function () {
                 alert("El usuario está deshabilitado");
             }
         });
-}
+};
 
 FrontEndUtils.prototype.activarDesactivarUsuario = function (id, activar, doneFn, argsDoneFn) {
     var peticionPut = {
@@ -75,7 +75,7 @@ FrontEndUtils.prototype.activarDesactivarUsuario = function (id, activar, doneFn
             console.log(err);
             alert('No se ha podido actualizar el usuario');
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.getInactivos = function () {
     utils.peticionAjax('/api/users/deshabilitados', 'GET', {},
@@ -90,7 +90,7 @@ FrontEndUtils.prototype.getInactivos = function () {
         function (respuesta) {
             console.log(respuesta);
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.getTop10 = function () {
     var peticionTop = {
@@ -110,7 +110,7 @@ FrontEndUtils.prototype.getTop10 = function () {
         function (respuesta) {
             console.log(respuesta);
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.getUsuarios = function () {
     utils.peticionAjax('/api/users', 'GET', {},
@@ -118,9 +118,10 @@ FrontEndUtils.prototype.getUsuarios = function () {
             if (respuesta.usuarios !== undefined) {
                 utils.limpiarTabla('#lineas');
                 for (var idx = 0; idx < respuesta.usuarios.length; idx++) {
-                    respuesta.usuarios[idx]['edit'] = utils.generarClonBoton('#btnModificarTemplate', respuesta.usuarios[idx].id);
-                    //respuesta.usuarios[idx]['delete'] = utils.generarClonBoton('', respuesta.usuarios[idx].id);
-                    utils.rellenarTabla([respuesta.usuarios[idx]], ['nombreUsuario', 'email', 'nombre', 'apellidos', 'telefono', 'habilitado', 'esAdmin', 'edit'], '#lineas');
+                    var modifyDiv = $('<div>').append(utils.generarClonBoton('#btnModificarTemplate', respuesta.usuarios[idx].id));
+                    modifyDiv.append(utils.generarClonBoton('#btnEliminarTemplate', respuesta.usuarios[idx].id));
+                    respuesta.usuarios[idx]['modify'] = modifyDiv;
+                    utils.rellenarTabla([respuesta.usuarios[idx]], ['nombreUsuario', 'email', 'nombre', 'apellidos', 'telefono', 'habilitado', 'esAdmin', 'modify'], '#lineas');
                 }
 
             }
@@ -128,7 +129,7 @@ FrontEndUtils.prototype.getUsuarios = function () {
         function (respuesta) {
             console.log(respuesta);
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.getPuntuaciones = function () {
     utils.peticionAjax('/api/results', 'GET', {},
@@ -141,7 +142,7 @@ FrontEndUtils.prototype.getPuntuaciones = function () {
         function (respuesta) {
             console.log(respuesta);
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.getPartidas = function () {
     utils.peticionAjax('/api/matches', 'GET', {},
@@ -154,7 +155,7 @@ FrontEndUtils.prototype.getPartidas = function () {
         function (respuesta) {
             console.log(respuesta);
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.registro = function () {
     if ($("#password").val() === $("#passwordConfirmation").val()) {
@@ -178,7 +179,7 @@ FrontEndUtils.prototype.registro = function () {
                 console.log(respuesta.status);
             }, sessionStorage.getItem('token'));
     }
-}
+};
 
 FrontEndUtils.prototype.altaRegistro = function (url, objeto, refreshFn) {
     utils.peticionAjax(url, 'POST', objeto,
@@ -193,13 +194,11 @@ FrontEndUtils.prototype.altaRegistro = function (url, objeto, refreshFn) {
         function (respuesta) {
             alert('Ha habido un error al crear el registro (' + respuesta.status + ')')
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.actualizarRegistro = function (url, objeto, refreshFn) {
-    console.log(objeto);
     utils.peticionAjax(url, 'PUT', objeto,
         function (respuesta) {
-            console.log(respuesta);
             if (respuesta !== undefined && respuesta.id > 0) {
                 alert('Registro actualizado con éxito');
                 if (refreshFn !== undefined) {
@@ -210,9 +209,22 @@ FrontEndUtils.prototype.actualizarRegistro = function (url, objeto, refreshFn) {
         function (respuesta) {
             alert('Ha habido un error al actualizar el registro (' + respuesta.status + ')')
         }, sessionStorage.getItem('token'));
-}
+};
+
+FrontEndUtils.prototype.eliminarRegistro = function (url, refreshFn) {
+    console.log(url);
+    utils.peticionAjax(url, 'DELETE', {},
+        function (respuesta) {
+            refreshFn();
+            alert('El registro se ha eliminado de la base de datos');
+        },
+        function (respuesta) {
+            alert('No se ha podido dar de baja el registro (' + respuesta.status + ')');
+        }, sessionStorage.getItem('token'));
+};
 
 FrontEndUtils.prototype.prepararModalUpdate = function (modalId, id, url) {
+    $(modalId).find('form')[0].reset();
     utils.peticionAjax(url, 'GET', {},
         function (respuesta) {
             if (respuesta !== undefined && respuesta.id > 0) {
@@ -236,7 +248,7 @@ FrontEndUtils.prototype.prepararModalUpdate = function (modalId, id, url) {
         function (respuesta) {
             alert('Ha habido un error cargando el registro');
         }, sessionStorage.getItem('token'));
-}
+};
 
 FrontEndUtils.prototype.mostrarModalRegistro = function (modalId, esNuevo) {
     $(modalId).find('.new').each(function () {
@@ -257,14 +269,19 @@ FrontEndUtils.prototype.mostrarModalRegistro = function (modalId, esNuevo) {
         $(modalId).find('form')[0].reset();
     }
     $(modalId).modal('show');
-}
+};
+
+FrontEndUtils.prototype.prepararModalDelete = function(modalId, id){
+    $("#id").val(id);
+    $(modalId).modal('show');
+};
 
 FrontEndUtils.prototype.generarClonBoton = function (btnId, id) {
     var $btn = $(btnId).clone();
     $btn.attr('onclick', $btn.attr('onclick').replace(new RegExp('_id_', 'g'), id));
     $btn.removeAttr('id');
-    $btn.attr('class', $btn.attr('class').replace('hdn', ''));
+    $btn.attr('class', $btn.attr('class').replace('hdn', 'ui button'));
     return $btn;
-}
+};
 
 utils = new FrontEndUtils();
