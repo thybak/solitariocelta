@@ -21,4 +21,11 @@ class PartidaSinFinalizar extends Model
      * @var bool
      */
     public $timestamps = false;
+    /**
+     * Obtiene el usuario asociado con el registro
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function usuario(){
+        return $this->hasOne('\App\Models\Usuario', 'id', 'usuarioId');
+    }
 }

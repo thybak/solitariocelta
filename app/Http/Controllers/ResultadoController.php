@@ -68,7 +68,7 @@ class ResultadoController extends Controller
      */
     public function obtenerDeUsuario(Int $usuario)
     {
-        $resultados = Resultado::where('usuarioId', '=', $usuario)->get();
+        $resultados = Resultado::with('usuario')->where('usuarioId', '=', $usuario)->get();
         if (!Utils::checkPermisos($usuario)) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
@@ -123,26 +123,33 @@ class ResultadoController extends Controller
      * Recupera todos los resultados almacenados en la base de datos
      * @return \Illuminate\Http\JsonResponse
      */
-    public function obtenerTodos(){
-        if (!Utils::usuarioLogeadoEsAdmin()){
+    public function obtenerTodos()
+    {
+        if (!Utils::usuarioLogeadoEsAdmin()) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
-        return response()->json(['resultados' => Resultado::all()], 200);
+        return response()->json(['resultados' => Resultado::with('usuario')->get()], 200);
     }
 
-    public function obtenerTop10(Request $request) {
-        if (!Utils::usuarioLogeadoEsAdmin()){
+    /**
+     * Obtiene el top 10 de puntuaciones para un rango de fechas presente en la petición
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function obtenerTop10(Request $request)
+    {
+        if (!Utils::usuarioLogeadoEsAdmin()) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
         $fechas = $request->input();
-        //$fechaInicio = $request->only('fechaInicio');
-        //$fechaFin = $request->only('fechaFin');
-        //var_dump($fechaInicio);
-        //var_dump($fechaFin);
-        $fechaInicio = strtotime($fechas['fechaInicio']);
-        $fechaFin = strtotime($fechas['fechaFin']);
-        // todo: el join con usuario para sacar datos del mismo.
-        $resultados = Resultado::whereDate('fechaCreacion', '>=', $fechaInicio)->orderByDesc('puntos')->take(10)->get();
+        $fechaInicioTime = strtotime($fechas['fechaInicio']);
+        $fechaFinTime = strtotime($fechas['fechaFin']);
+        if (!$fechaInicioTime || !$fechaFinTime || ($fechaFinTime < $fechaInicioTime)) {
+            return response()->json(Utils::RES_ERROR_400, Utils::RES_ERROR_400['code']);
+        }
+        $fechaInicio = date('Y-m-d', $fechaInicioTime);
+        $fechaFin = date('Y-m-d', $fechaFinTime);
+        $resultados = Resultado::with('usuario')->whereBetween('fechaCreacion', [$fechaInicio, $fechaFin])->orderByDesc('puntos')->take(10)->get();
         return response()->json(['resultados' => $resultados], 200);
     }
 }

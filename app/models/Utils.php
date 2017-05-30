@@ -16,6 +16,7 @@ class Utils
     const USER_ERROR_400 = ['code' => 400, 'message' => 'El email o el nombre de usuario ya existen en la BBDD'];
     const USER_ERROR_422 = ['code' => 422, 'message' => 'Falta el nombre de usuario, email o contraseña'];
     const RES_ERROR_422 = ['code' => 422, 'message' => 'Falta el identificador de usuario o la puntuación de la partida'];
+    const RES_ERROR_400 = ['code' => 400, 'message' => 'Se han facilitado fechas incorrectas'];
     const PAR_ERROR_422 = ['code' => 422, 'message' => 'Falta el identificador de usuario o el estado de la partida'];
 
     /**

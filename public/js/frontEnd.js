@@ -19,11 +19,20 @@ FrontEndUtils.prototype.peticionAjax = function (url, method, params, doneFn, fa
 
 };
 
+FrontEndUtils.prototype.crearColumna = function (row, col) {
+    var splitCols = col.split('.');
+    if (splitCols.length === 1) { // en el caso de que no sea un campo compuesto
+        return $('<td>').append(row[col]);
+    } else { // en otro caso sólo se tiene en cuenta el primer nivel
+        return $('<td>').append(row[splitCols[0]][splitCols[1]]);
+    }
+};
+
 FrontEndUtils.prototype.rellenarTabla = function (rows, cols, id) {
     for (var idx = 0; idx < rows.length; idx++) {
-        var row = $('<tr>').append($('<td>').append(rows[idx][cols[0]]));
+        var row = $('<tr>').append(utils.crearColumna(rows[idx], cols[0]));
         for (var col = 1; col < cols.length; col++) {
-            row.append($('<td>').append(rows[idx][cols[col]]));
+            row.append(utils.crearColumna(rows[idx], cols[col]));
         }
         $(id).find("tbody").append(row);
     }
@@ -53,11 +62,11 @@ FrontEndUtils.prototype.login = function () {
         },
         function (respuesta) {
             if (respuesta.status === 500) {
-                alert("No se ha podido iniciar sesión debido a un error interno en el servidor");
+                utils.mostrarAlerta("No se ha podido iniciar sesión debido a un error interno en el servidor");
             } else if (respuesta.status === 404) {
-                alert("No se ha encontrado el usuario y contraseña introducidos");
+                utils.mostrarAlerta("No se ha encontrado el usuario y contraseña introducidos");
             } else if (respuesta.status === 403) {
-                alert("El usuario está deshabilitado");
+                utils.mostrarAlerta("El usuario está deshabilitado");
             }
         });
 };
@@ -73,7 +82,7 @@ FrontEndUtils.prototype.activarDesactivarUsuario = function (id, activar, doneFn
         function (respuesta, err) {
             console.log(respuesta);
             console.log(err);
-            alert('No se ha podido actualizar el usuario');
+            utils.mostrarAlerta('No se ha podido actualizar el usuario');
         }, sessionStorage.getItem('token'));
 };
 
@@ -85,6 +94,8 @@ FrontEndUtils.prototype.getInactivos = function () {
                     respuesta.usuarios[idx]['custom'] = utils.generarClonBoton('#btnActivarTemplate', respuesta.usuarios[idx].id);
                     utils.rellenarTabla([respuesta.usuarios[idx]], ['nombreUsuario', 'email', 'created_at', 'custom'], '#lineas');
                 }
+            } else {
+                utils.mostrarAlerta('No hay usuarios inactivos en este momento');
             }
         },
         function (respuesta) {
@@ -93,23 +104,30 @@ FrontEndUtils.prototype.getInactivos = function () {
 };
 
 FrontEndUtils.prototype.getTop10 = function () {
-    var peticionTop = {
-        "fechaInicio": $("#txtFechaInicio").val(),
-        "fechaFin": $("#txtFechaFin").val()
-    };
-
-    utils.peticionAjax('/api/results/top10', 'POST', peticionTop,
-        function (respuesta) {
-            if (respuesta.resultados !== undefined) {
-                utils.limpiarTabla('#lineas');
-                utils.rellenarTabla(respuesta.resultados, ['puntos', 'fechaCreacion', 'usuarioId'], '#lineas');
-            } else {
-                alert("No se han obtenido resultados");
-            }
-        },
-        function (respuesta) {
-            console.log(respuesta);
-        }, sessionStorage.getItem('token'));
+    var fechaInicio = $("#txtFechaInicio").val();
+    var fechaFin = $("#txtFechaFin").val();
+    if (fechaInicio !== "" && fechaFin !== "") {
+        var peticionTop = {
+            "fechaInicio": fechaInicio,
+            "fechaFin": fechaFin
+        };
+        utils.peticionAjax('/api/results/top10', 'POST', peticionTop,
+            function (respuesta) {
+                if (respuesta.resultados !== undefined && respuesta.resultados.length > 0) {
+                    utils.limpiarTabla('#lineas');
+                    $('#lineas').removeClass('hdn');
+                    utils.rellenarTabla(respuesta.resultados, ['puntos', 'fechaCreacion', 'usuario.nombreUsuario'], '#lineas');
+                } else {
+                    utils.mostrarAlerta("No se han obtenido resultados");
+                }
+            },
+            function (respuesta) {
+                utils.mostrarAlerta('Las fechas introducidas no tienen un formato correcto (mm/dd/yyyy) o bien la fecha de inicio es mayor que la de fin.');
+                console.log(respuesta);
+            }, sessionStorage.getItem('token'));
+    } else {
+        utils.mostrarAlerta('Al menos debes facilitar fecha de inicio y fin.');
+    }
 };
 
 FrontEndUtils.prototype.getUsuarios = function () {
@@ -136,7 +154,12 @@ FrontEndUtils.prototype.getPuntuaciones = function () {
         function (respuesta) {
             if (respuesta.resultados !== undefined) {
                 utils.limpiarTabla('#lineas');
-                utils.rellenarTabla(respuesta.resultados, ['usuarioId', 'puntos', 'fechaCreacion'], '#lineas');
+                for (var idx = 0; idx < respuesta.resultados.length; idx++) {
+                    var modifyDiv = $('<div>').append(utils.generarClonBoton('#btnModificarTemplate', respuesta.resultados[idx].id));
+                    modifyDiv.append(utils.generarClonBoton('#btnEliminarTemplate', respuesta.resultados[idx].id));
+                    respuesta.resultados[idx]['modify'] = modifyDiv;
+                    utils.rellenarTabla([respuesta.resultados[idx]], ['usuario.nombreUsuario', 'puntos', 'fechaCreacion', 'modify'], '#lineas');
+                }
             }
         },
         function (respuesta) {
@@ -144,16 +167,39 @@ FrontEndUtils.prototype.getPuntuaciones = function () {
         }, sessionStorage.getItem('token'));
 };
 
+FrontEndUtils.prototype.getPuntuacionesDeUsuario = function (usuarioId) {
+    if (usuarioId > 0) {
+        utils.peticionAjax('/api/results/user/' + usuarioId, 'GET', {},
+            function (respuesta) {
+                console.log(respuesta.resultados);
+                utils.limpiarTabla('#lineas');
+                $('#lineas').removeClass('hdn');
+                utils.rellenarTabla(respuesta.resultados, ['puntos', 'fechaCreacion', 'usuario.nombreUsuario'], '#lineas');
+            },
+            function (respuesta) {
+                utils.mostrarAlerta('No se han podido recuperar las puntuaciones del usuario ' + usuarioId);
+            }, sessionStorage.getItem('token'));
+    } else {
+        utils.mostrarAlerta('Al menos debes seleccionar un usuario');
+    }
+}
+
 FrontEndUtils.prototype.getPartidas = function () {
     utils.peticionAjax('/api/matches', 'GET', {},
         function (respuesta) {
             if (respuesta.partidas !== undefined) {
                 utils.limpiarTabla('#lineas');
-                utils.rellenarTabla(respuesta.partidas, ['usuarioId', 'estadoJson', 'fechaCreacion'], '#lineas');
+                console.log(respuesta.partidas);
+                for (var idx = 0; idx < respuesta.partidas.length; idx++) {
+                    var modifyDiv = $('<div>').append(utils.generarClonBoton('#btnModificarTemplate', respuesta.partidas[idx].id));
+                    modifyDiv.append(utils.generarClonBoton('#btnEliminarTemplate', respuesta.partidas[idx].id));
+                    respuesta.partidas[idx]['modify'] = modifyDiv;
+                    utils.rellenarTabla([respuesta.partidas[idx]], ['usuario.nombreUsuario', 'estadoJson', 'fechaCreacion', 'modify'], '#lineas');
+                }
             }
         },
         function (respuesta) {
-            console.log(respuesta);
+            console.log(respuesta + " " + respuesta.status);
         }, sessionStorage.getItem('token'));
 };
 
@@ -167,14 +213,14 @@ FrontEndUtils.prototype.registro = function () {
         utils.peticionAjax('/api/users', 'POST', peticionRegistro,
             function (respuesta) {
                 if (respuesta !== undefined && respuesta.id > 0) {
-                    alert('El alta del usuario se ha realizado con éxito. El siguiente paso es que un administrador valide tu cuenta');
+                    utils.mostrarAlerta('El alta del usuario se ha realizado con éxito. El siguiente paso es que un administrador valide tu cuenta');
                 }
             },
             function (respuesta) {
                 if (respuesta.status === 400) {
-                    alert('El usuario o email no son únicos en el sistema');
+                    utils.mostrarAlerta('El usuario o email no son únicos en el sistema');
                 } else if (respuesta.status === 422) {
-                    alert('Nombre de usuario, email y contraseña son campos obligatorios en el registro');
+                    utils.mostrarAlerta('Nombre de usuario, email y contraseña son campos obligatorios en el registro');
                 }
                 console.log(respuesta.status);
             }, sessionStorage.getItem('token'));
@@ -185,14 +231,14 @@ FrontEndUtils.prototype.altaRegistro = function (url, objeto, refreshFn) {
     utils.peticionAjax(url, 'POST', objeto,
         function (respuesta) {
             if (respuesta !== undefined && respuesta.id > 0) {
-                alert('Nuevo registro creado con éxito');
+                utils.mostrarAlerta('Nuevo registro creado con éxito');
                 if (refreshFn !== undefined) {
                     refreshFn();
                 }
             }
         },
         function (respuesta) {
-            alert('Ha habido un error al crear el registro (' + respuesta.status + ')')
+            utils.mostrarAlerta('Ha habido un error al crear el registro (' + respuesta.status + ')')
         }, sessionStorage.getItem('token'));
 };
 
@@ -200,14 +246,14 @@ FrontEndUtils.prototype.actualizarRegistro = function (url, objeto, refreshFn) {
     utils.peticionAjax(url, 'PUT', objeto,
         function (respuesta) {
             if (respuesta !== undefined && respuesta.id > 0) {
-                alert('Registro actualizado con éxito');
+                utils.mostrarAlerta('Registro actualizado con éxito');
                 if (refreshFn !== undefined) {
                     refreshFn();
                 }
             }
         },
         function (respuesta) {
-            alert('Ha habido un error al actualizar el registro (' + respuesta.status + ')')
+            utils.mostrarAlerta('Ha habido un error al actualizar el registro (' + respuesta.status + ')')
         }, sessionStorage.getItem('token'));
 };
 
@@ -216,10 +262,10 @@ FrontEndUtils.prototype.eliminarRegistro = function (url, refreshFn) {
     utils.peticionAjax(url, 'DELETE', {},
         function (respuesta) {
             refreshFn();
-            alert('El registro se ha eliminado de la base de datos');
+            utils.mostrarAlerta('El registro se ha eliminado de la base de datos');
         },
         function (respuesta) {
-            alert('No se ha podido dar de baja el registro (' + respuesta.status + ')');
+            utils.mostrarAlerta('No se ha podido dar de baja el registro (' + respuesta.status + ')');
         }, sessionStorage.getItem('token'));
 };
 
@@ -237,16 +283,15 @@ FrontEndUtils.prototype.prepararModalUpdate = function (modalId, id, url) {
                         } else {
                             $(elemId).val(respuesta[clave]);
                         }
-
                     }
                 }
                 utils.mostrarModalRegistro(modalId, false);
             } else {
-                alert('Ha habido un error cargando el registro');
+                utils.mostrarAlerta('Ha habido un error cargando el registro');
             }
         },
         function (respuesta) {
-            alert('Ha habido un error cargando el registro');
+            utils.mostrarAlerta('Ha habido un error cargando el registro');
         }, sessionStorage.getItem('token'));
 };
 
@@ -271,7 +316,7 @@ FrontEndUtils.prototype.mostrarModalRegistro = function (modalId, esNuevo) {
     $(modalId).modal('show');
 };
 
-FrontEndUtils.prototype.prepararModalDelete = function(modalId, id){
+FrontEndUtils.prototype.prepararModalDelete = function (modalId, id) {
     $("#id").val(id);
     $(modalId).modal('show');
 };
@@ -282,6 +327,32 @@ FrontEndUtils.prototype.generarClonBoton = function (btnId, id) {
     $btn.removeAttr('id');
     $btn.attr('class', $btn.attr('class').replace('hdn', 'ui button'));
     return $btn;
+};
+
+FrontEndUtils.prototype.mostrarAlerta = function (texto, titulo) {
+    titulo = titulo === undefined ? "Advertencia" : titulo;
+    $("body").append($('<div class="ui modal" id="modalAdvertencia">')
+        .append($('<div class="header">').append(titulo))
+        .append($('<div class="content">').append(texto))
+        .append($('<div class="actions">').append($('<button type="button" class="ui positive button">').append('Aceptar'))));
+    $("#modalAdvertencia").modal('show');
+};
+
+FrontEndUtils.prototype.crearSelectUsuarios = function (selectId) {
+    utils.peticionAjax('/api/users', 'GET', {},
+        function (respuesta) {
+            if (respuesta.usuarios !== undefined && respuesta.usuarios.length > 0) {
+                for (var idx = 0; idx < respuesta.usuarios.length; idx++) {
+                    $(selectId).append($('<option value=' + respuesta.usuarios[idx]['id'] + '>').append(respuesta.usuarios[idx]['nombreUsuario']));
+                }
+            } else {
+                utils.mostrarAlerta('No existen usuarios en la base de datos');
+            }
+        },
+        function (respuesta) {
+            utils.mostrarAlerta('Ha habido un error recuperando los usuarios');
+        }, sessionStorage.getItem('token'));
+
 };
 
 utils = new FrontEndUtils();

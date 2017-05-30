@@ -29,6 +29,14 @@
     <div class="container">
         <div class="ui segment">
             <h2>¡Bienvenido al área de administración!</h2>
+            <p>Desde este área serás capaz de administrar a través del menú:</p>
+            <ul>
+                <li>Activación de usuarios</li>
+                <li>Usuarios</li>
+                <li>Partidas</li>
+                <li>Puntuaciones</li>
+                <li>Rankings de puntuaciones</li>
+            </ul>
         </div>
     </div>
 @endsection

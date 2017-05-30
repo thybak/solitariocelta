@@ -27,8 +27,7 @@ class GetUserFromTokenCustomized extends BaseMiddleware
         $response = $this->events->fire($event, $payload, true);
 
         if (strpos($pathRequest, 'api/') === false) {
-            return response()->make($error, $status);
-            //return $response ?: redirect('/');
+            return $response ?: redirect('/');
         }
         return $response ?: $this->response->json(['code' => $status, 'message' => $error], $status);
     }

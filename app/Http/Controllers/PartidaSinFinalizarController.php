@@ -111,7 +111,7 @@ class PartidaSinFinalizarController extends Controller
         if (!$partidaDB->update($request->input())) {
             return response()->json(Utils::ERROR_500, Utils::ERROR_500['code']);
         }
-        return response()->json(Resultado::find($partida), 209);
+        return response()->json(PartidaSinFinalizar::find($partida), 209);
     }
 
     /**
@@ -122,6 +122,6 @@ class PartidaSinFinalizarController extends Controller
         if (!Utils::usuarioLogeadoEsAdmin()){
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
-        return response()->json(['partidas' => PartidaSinFinalizar::all()], 200);
+        return response()->json(['partidas' => PartidaSinFinalizar::with('usuario')->get()], 200);
     }
 }
