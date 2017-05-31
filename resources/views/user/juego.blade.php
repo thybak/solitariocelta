@@ -12,7 +12,7 @@
                 <div class="item">
                     <h3><i class="options icon"></i> @yield('titulo')</h3>
                 </div>
-                <a class="item" onclick="utils.recuperarRegistro('/api/matches', { usuarioId : $('#id').val() }, solitario.recuperarEstado)">
+                <a class="item" onclick="utils.recuperarRegistro('/api/matches/user/' + $('#id').val(),{}, solitario.recuperarEstado)">
                     <i class="download icon"></i> Recuperar estado
                 </a>
                 <a class="item" onclick="solitario.construirTableroPersonalizado()">

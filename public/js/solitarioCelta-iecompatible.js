@@ -327,9 +327,11 @@ SolitarioCelta.prototype.construirTableroPersonalizado = function (estadoJson) {
     this.construirTablero();
     if (estadoJson !== undefined){
         this.tableroEstados = estadoJson.tableroEstados;
-        this.tiempoActual = estadoJson.tiempoActual;
-        document.getElementById('txtMaxSegundos').value = estadoJson.tiempoMaximo;
-        this.comenzarJuego(true);
+        if (estadoJson.tiempoMaximo > 0) {
+            this.tiempoActual = estadoJson.tiempoActual;
+            document.getElementById('txtMaxSegundos').value = estadoJson.tiempoMaximo;
+        }
+        this.comenzarJuego(estadoJson.tiempoMaximo > 0);
         this.actualizarPuntuacion(estadoJson.puntos);
     }
 };
@@ -445,7 +447,7 @@ SolitarioCelta.prototype.registrarPuntuacion = function(){
 };
 
 SolitarioCelta.prototype.recuperarEstado = function(estado){
-    if (estado.partidas.length == 1 && estado.partidas[0].estadoJson !== ""){
+    if (estado.partidas.length === 1 && estado.partidas[0].estadoJson !== ""){
         var estadoJson = JSON.parse(estado.partidas[0].estadoJson);
         solitario.construirTableroPersonalizado(estadoJson);
     } else {
