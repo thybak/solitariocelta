@@ -79,6 +79,23 @@ class ResultadoController extends Controller
     }
 
     /**
+     * A partir del identificador de usuario obtiene una lista de sus cinco mejores puntuaciones ordenadas de mayor a menor
+     * @param Int $usuario
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function obtenerTop5DeUsuario(Int $usuario)
+    {
+        $resultados = Resultado::where('usuarioId', '=', $usuario)->orderByDesc('puntos')->take(5)->get();
+        if (!Utils::checkPermisos($usuario)) {
+            return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
+        }
+        if (!$resultados || count($resultados) == 0) {
+            return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);
+        }
+        return response()->json(['resultados' => $resultados], 200);
+    }
+
+    /**
      * A partir del identificador de resultado y tras unas validaciones previas, se elimina de la base de datos
      * @param Int $resultado
      * @return \Illuminate\Http\JsonResponse

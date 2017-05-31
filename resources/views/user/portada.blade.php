@@ -1,17 +1,39 @@
 @extends('layouts.app')
 @section('titulo', 'Portada usuario')
-@section('cuerpo')
-    <ul>
-        <li>
-            Comenzar juego
-        </li>
-        <li>
-            <a href="{!! url('/user/perfil') !!}">Ver perfil</a>
-        </li>
-        @if ($esAdmin)
-            <li>
-                <a href="{!! url('/admin') !!}">Administración</a>
-            </li>
+@section('menu')
+    <div class="ui attached stackable menu">
+        <a class="item" href="/user">
+            <h1 class="ui header"><i class="game icon"></i> Solitario celta (TDW 16-17)</h1>
+        </a>
+        <a class="item" href="{!! url('/user/perfil') !!}">
+            <i class="user icon"></i> Modificar perfil
+        </a>
+        <a class="item" href="{!! url('/user/puntuaciones') !!}">
+            <i class="trophy icon"></i> Ver puntuaciones
+        </a>
+        <a class="item" href="{!! url('/user/juego') !!}">
+            <i class="game icon"></i> Jugar
+        </a>
+        @if ($usuarioAuth -> esAdmin)
+            <a class="item" href="{!! url('/admin') !!}">
+                <i class="key icon"></i> Administración del sistema
+            </a>
         @endif
-    </ul>
+        <div class="item">
+            <i class="user icon"></i> Usuario: {!! $usuarioAuth->nombreUsuario !!}
+        </div>
+    </div>
+@endsection
+@section('cuerpo')
+    <div class="container">
+        <div class="ui segment">
+            <h2>Bienvenido a SolitarioCelta</h2>
+            <p>Desde esta vista podrás acceder a: </p>
+            <ul>
+                <li>Tu perfil</li>
+                <li>Las puntuaciones que has registrado</li>
+                <li>Al juego del solitario celta</li>
+            </ul>
+        </div>
+    </div>
 @endsection

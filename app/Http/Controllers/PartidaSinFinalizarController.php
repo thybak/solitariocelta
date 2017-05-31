@@ -23,7 +23,8 @@ class PartidaSinFinalizarController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function crear(Request $request){
+    public function crear(Request $request)
+    {
         $partidaPost = $request->input();
         if (!$this->camposObligatoriosPresentes($partidaPost)) {
             return response()->json(Utils::PAR_ERROR_422, Utils::RES_ERROR_422['code']);
@@ -34,6 +35,9 @@ class PartidaSinFinalizarController extends Controller
         }
         if (!Utils::checkPermisos($usuarioId)) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
+        }
+        if ($partidaDB = PartidaSinFinalizar::where('usuarioId', '=', $usuarioId)->first()) {
+            return $this->actualizar($partidaDB->id, $request); // en caso de que ya exista vamos a sobreescribirla
         }
         $partida = new PartidaSinFinalizar();
         $partida->fill($partidaPost);
@@ -48,7 +52,8 @@ class PartidaSinFinalizarController extends Controller
      * @param Int $partida
      * @return \Illuminate\Http\JsonResponse
      */
-    public function obtener(Int $partida){
+    public function obtener(Int $partida)
+    {
         $partidaDB = PartidaSinFinalizar::find($partida);
         if (!$partidaDB) {
             return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);
@@ -64,7 +69,8 @@ class PartidaSinFinalizarController extends Controller
      * @param Int $usuario
      * @return \Illuminate\Http\JsonResponse
      */
-    public function obtenerDeUsuario(Int $usuario){
+    public function obtenerDeUsuario(Int $usuario)
+    {
         $partidas = PartidaSinFinalizar::where('usuarioId', '=', $usuario)->get();
         if (!Utils::checkPermisos($usuario)) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
@@ -80,7 +86,8 @@ class PartidaSinFinalizarController extends Controller
      * @param Int $partida
      * @return \Illuminate\Http\JsonResponse
      */
-    public function borrar(Int $partida){
+    public function borrar(Int $partida)
+    {
         if (!Utils::usuarioLogeadoEsAdmin()) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
@@ -100,7 +107,8 @@ class PartidaSinFinalizarController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function actualizar (Int $partida, Request $request){
+    public function actualizar(Int $partida, Request $request)
+    {
         if (!Utils::usuarioLogeadoEsAdmin()) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
@@ -118,8 +126,9 @@ class PartidaSinFinalizarController extends Controller
      * Recupera todas las partidas almacenadas en la base de datos
      * @return \Illuminate\Http\JsonResponse
      */
-    public function obtenerTodos(){
-        if (!Utils::usuarioLogeadoEsAdmin()){
+    public function obtenerTodos()
+    {
+        if (!Utils::usuarioLogeadoEsAdmin()) {
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
         return response()->json(['partidas' => PartidaSinFinalizar::with('usuario')->get()], 200);

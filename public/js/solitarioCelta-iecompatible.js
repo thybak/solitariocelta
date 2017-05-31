@@ -35,7 +35,7 @@ SolitarioCelta.prototype.limpiarBolaPulsadaAnterior = function () {
             }
         }
     }
-}
+};
 
 SolitarioCelta.prototype.bolaPulsada = function (bola) {
     var fila = parseInt(bola.id.split('_')[0]);
@@ -54,7 +54,7 @@ SolitarioCelta.prototype.bolaPulsada = function (bola) {
         }
     }
     this.cambiarEstado(fila, columna, estado);
-}
+};
 
 SolitarioCelta.prototype.recogerBolaPulsada = function () {
     var coordenadas = {};
@@ -66,7 +66,7 @@ SolitarioCelta.prototype.recogerBolaPulsada = function () {
         }
     }
     return coordenadas;
-}
+};
 
 SolitarioCelta.prototype.actualizarPuntuacion = function (puntuacionASumar) {
     if (puntuacionASumar == undefined) {
@@ -83,7 +83,7 @@ SolitarioCelta.prototype.actualizarPuntuacion = function (puntuacionASumar) {
     } else {
         puntuacionDOM.className = '';
     }
-}
+};
 
 SolitarioCelta.prototype.limpiarIntervalo = function () {
     if (this.intervaloIniciado) {
@@ -92,7 +92,7 @@ SolitarioCelta.prototype.limpiarIntervalo = function () {
         document.getElementById('txtMaxSegundos').removeAttribute('readonly');
         document.getElementById('borrarMaxSegundos').style.visibility = "visible";
     }
-}
+};
 
 SolitarioCelta.prototype.finDelJuego = function () {
     this.limpiarIntervalo();
@@ -117,7 +117,7 @@ SolitarioCelta.prototype.finDelJuego = function () {
             document.getElementById(fila + "_" + columna).onclick = undefined;
         }
     }
-}
+};
 
 SolitarioCelta.prototype.obtenerSituacionJuego = function () {
     this.bolasEnJuego = [];
@@ -131,7 +131,7 @@ SolitarioCelta.prototype.obtenerSituacionJuego = function () {
             }
         }
     }
-}
+};
 
 SolitarioCelta.prototype.comprobarSiFinDeJuego = function () {
     var haySolucion = false;
@@ -150,7 +150,7 @@ SolitarioCelta.prototype.comprobarSiFinDeJuego = function () {
     if (!haySolucion) {
         this.finDelJuego();
     }
-}
+};
 
 SolitarioCelta.prototype.comprobarSiComida = function (imgId, coordenadasBolaPulsada, comer) {
     var fila = parseInt(imgId.split('_')[0]);
@@ -186,21 +186,21 @@ SolitarioCelta.prototype.comprobarSiComida = function (imgId, coordenadasBolaPul
     }
 
     return puedeComer;
-}
+};
 
 SolitarioCelta.prototype.huecoPulsado = function (hueco) {
     var coordenadasBolaPulsada = this.recogerBolaPulsada();
     if (coordenadasBolaPulsada.fila != undefined) {
         if (!this.comprobarSiComida(hueco.id, coordenadasBolaPulsada, true)) {
-            alert('No has pulsado la bola correcta para colocarla en ese hueco. Prueba con otra en su misma fila o diagonal.');
+            utils.mostrarAlerta('No has pulsado la bola correcta para colocarla en ese hueco. Prueba con otra en su misma fila o diagonal.');
         } else {
             this.actualizarPuntuacion(PTS_COMIDA);
             this.comprobarSiFinDeJuego();
         }
     } else {
-        alert('Primero debes pulsar alguna bola.')
+        utils.mostrarAlerta('Primero debes pulsar alguna bola.')
     }
-}
+};
 
 SolitarioCelta.prototype.hayHueco = function () {
     for (var fila = 0; fila < NUM_FILAS; fila++) {
@@ -211,7 +211,7 @@ SolitarioCelta.prototype.hayHueco = function () {
         }
     }
     return false;
-}
+};
 
 SolitarioCelta.prototype.crearImagen = function (fila, columna, estado) {
     var imagen = document.createElement('img');
@@ -223,23 +223,23 @@ SolitarioCelta.prototype.crearImagen = function (fila, columna, estado) {
             } else {
                 imagen.onclick = function() { solitario.bolaPulsada(imagen); }
             }
-            imagen.src = "imgs/hueco.png";
+            imagen.src = "/imgs/hueco.png";
             break;
         case EST_PLANO:
-            imagen.src = "imgs/plano.png";
+            imagen.src = "/imgs/plano.png";
             break;
         case EST_BOLA:
             imagen.onclick = function() { solitario.bolaPulsada(imagen); }
-            imagen.src = "imgs/bola.png";
+            imagen.src = "/imgs/bola.png";
             break;
         case EST_PULSADA:
             imagen.onclick = function() { solitario.bolaPulsada(imagen); }
-            imagen.src = "imgs/bola_pulsada.png";
+            imagen.src = "/imgs/bola_pulsada.png";
             break;
     }
     imagen.id = fila + "_" + columna;
     return imagen;
-}
+};
 
 SolitarioCelta.prototype.cambiarEstado = function (fila, columna, estado) {
     var imagen = document.getElementById(fila + "_" + columna);
@@ -251,22 +251,22 @@ SolitarioCelta.prototype.cambiarEstado = function (fila, columna, estado) {
             } else {
                 imagen.onclick = function() { solitario.bolaPulsada(imagen); }
             }
-            imagen.src = "imgs/hueco.png";
+            imagen.src = "/imgs/hueco.png";
             break;
         case EST_PLANO:
-            imagen.src = "imgs/plano.png";
+            imagen.src = "/imgs/plano.png";
             break;
         case EST_BOLA:
             imagen.onclick = function() { solitario.bolaPulsada(imagen); }
-            imagen.src = "imgs/bola.png";
+            imagen.src = "/imgs/bola.png";
             break;
         case EST_PULSADA:
             imagen.onclick = function() { solitario.bolaPulsada(imagen); }
-            imagen.src = "imgs/bola_pulsada.png";
+            imagen.src = "/imgs/bola_pulsada.png";
             break;
     }
     this.tableroEstados[fila][columna].estado = estado;
-}
+};
 
 SolitarioCelta.prototype.establecerHueco = function () {
     var huecoCentral = document.getElementById('huecoCentral');
@@ -282,7 +282,7 @@ SolitarioCelta.prototype.establecerHueco = function () {
         }
     }
     this.cambiarEstado(fila, columna, EST_HUECO);
-}
+};
 
 SolitarioCelta.prototype.construirTablero = function () {
     var tableroDOM = document.getElementById('tablero');
@@ -318,14 +318,21 @@ SolitarioCelta.prototype.construirTablero = function () {
         }
         tableroDOM.appendChild(document.createElement('br'));
     }
-}
+};
 
-SolitarioCelta.prototype.construirTableroPersonalizado = function () {
+SolitarioCelta.prototype.construirTableroPersonalizado = function (estadoJson) {
     this.tableroPersonalizado = true;
     this.limpiarIntervalo();
     this.inicializarUI();
     this.construirTablero();
-}
+    if (estadoJson !== undefined){
+        this.tableroEstados = estadoJson.tableroEstados;
+        this.tiempoActual = estadoJson.tiempoActual;
+        document.getElementById('txtMaxSegundos').value = estadoJson.tiempoMaximo;
+        this.comenzarJuego(true);
+        this.actualizarPuntuacion(estadoJson.puntos);
+    }
+};
 
 SolitarioCelta.prototype.reAsignarClickEnTableroPersonalizado = function () {
     for (var fila = 0; fila < NUM_FILAS; fila++) {
@@ -333,14 +340,14 @@ SolitarioCelta.prototype.reAsignarClickEnTableroPersonalizado = function () {
             this.cambiarEstado(fila, columna, this.tableroEstados[fila][columna].estado);
         }
     }
-}
+};
 
 SolitarioCelta.prototype.actualizarControlTiempoPartida = function () {
     document.getElementById('tiempoPartida').innerHTML = this.tiempoActual + "/" + this.tiempoMaximo + " segundos";
     $('#porcentajeTiempo').progress({
         percent: this.tiempoActual / this.tiempoMaximo * 100
     });
-}
+};
 
 SolitarioCelta.prototype.comprobarTiempo = function () {
     this.tiempoActual++;
@@ -349,7 +356,7 @@ SolitarioCelta.prototype.comprobarTiempo = function () {
         this.obtenerSituacionJuego();
         this.finDelJuego();
     }
-}
+};
 
 SolitarioCelta.prototype.inicializarUI = function () {
     document.getElementById('informacionJuego').style.display = "none";
@@ -374,15 +381,16 @@ SolitarioCelta.prototype.inicializarUI = function () {
         document.getElementById('modoSituar').style.display = "none";
     }
     this.actualizarPuntuacion();
-}
+};
 
-SolitarioCelta.prototype.activarTemporizador = function () {
+SolitarioCelta.prototype.activarTemporizador = function (tiempoActualYaDefinido) {
     var txtMaxSegundos = document.getElementById('txtMaxSegundos');
-    this.tiempoActual = 0;
+    if (!tiempoActualYaDefinido) {
+        this.tiempoActual = 0;
+    }
     this.tiempoMaximo = 0;
     if (txtMaxSegundos.value !== "") {
         this.tiempoMaximo = parseInt(txtMaxSegundos.value);
-        this.tiempoActual = 0;
         this.actualizarControlTiempoPartida();
         if (this.intervaloIniciado) {
             clearInterval(this.intervalo);
@@ -394,25 +402,57 @@ SolitarioCelta.prototype.activarTemporizador = function () {
         this.intervaloIniciado = true;
         document.getElementById('campoTiempoActual').style.display = "block";
     }
-}
+};
 
-SolitarioCelta.prototype.comenzarJuego = function () {
+SolitarioCelta.prototype.comenzarJuego = function (tiempoActualYaDefinido) {
     if (this.tableroPersonalizado) {
         if (!this.hayHueco()) {
             this.establecerHueco();
         }
         this.tableroPersonalizado = false;
         this.reAsignarClickEnTableroPersonalizado();
-        this.activarTemporizador();
+        this.activarTemporizador(tiempoActualYaDefinido === undefined ? false : tiempoActualYaDefinido);
         this.comprobarSiFinDeJuego();
     } else {
         this.construirTablero();
         this.establecerHueco();
-        this.activarTemporizador();
+        this.activarTemporizador(tiempoActualYaDefinido === undefined ? false : tiempoActualYaDefinido);
     }
     
     this.inicializarUI();
-}
+};
+
+SolitarioCelta.prototype.guardarEstado = function(){
+    var estadoJson = {
+        tableroEstados : this.tableroEstados,
+        tiempoMaximo: this.tiempoMaximo,
+        tiempoActual: this.tiempoActual,
+        puntos: this.puntuacion
+    };
+    var estado = {
+        estadoJson: JSON.stringify(estadoJson),
+        usuarioId: $('#id').val()
+    };
+    utils.altaRegistro('/api/matches', estado);
+};
+
+SolitarioCelta.prototype.registrarPuntuacion = function(){
+    var puntuacion = {
+        puntos: this.puntuacion,
+        usuarioId: $('#id').val()
+    };
+    utils.altaRegistro('/api/results', puntuacion, function(){ document.getElementById('registroPuntuacion').style.display = "none"; });
+};
+
+SolitarioCelta.prototype.recuperarEstado = function(estado){
+    if (estado.partidas.length == 1 && estado.partidas[0].estadoJson !== ""){
+        var estadoJson = JSON.parse(estado.partidas[0].estadoJson);
+        solitario.construirTableroPersonalizado(estadoJson);
+    } else {
+        utils.mostrarAlerta('Ha habido un error al recuperar la partida del usuario');
+    }
+
+};
 
 function limpiarCampoMaxSegundos() {
     document.getElementById('txtMaxSegundos').value = "";

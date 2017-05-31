@@ -130,6 +130,23 @@ FrontEndUtils.prototype.getTop10 = function () {
     }
 };
 
+FrontEndUtils.prototype.getTop5DeUsuario = function (usuarioId){
+    if (usuarioId > 0){
+        utils.peticionAjax('/api/results/user/' + usuarioId + '/top5', 'GET', {},
+        function (respuesta){
+            if (respuesta.resultados !== undefined){
+                utils.limpiarTabla('#top5');
+                utils.rellenarTabla(respuesta.resultados, ['puntos', 'fechaCreacion'], '#top5');
+            }
+        },
+        function (respuesta){
+            utils.mostrarAlerta('No se pudieron obtener el listado de las 5 mejores puntuaciones del usuario');
+        }, sessionStorage.getItem('token'));
+    } else {
+        utils.mostrarAlerta('Al menos debes facilitar el identificador del usuario');
+    }
+}
+
 FrontEndUtils.prototype.getUsuarios = function () {
     utils.peticionAjax('/api/users', 'GET', {},
         function (respuesta) {
@@ -167,17 +184,19 @@ FrontEndUtils.prototype.getPuntuaciones = function () {
         }, sessionStorage.getItem('token'));
 };
 
-FrontEndUtils.prototype.getPuntuacionesDeUsuario = function (usuarioId) {
+FrontEndUtils.prototype.getPuntuacionesDeUsuario = function (usuarioId, tablaId, cols) {
     if (usuarioId > 0) {
+        tablaId = tablaId === undefined ? '#lineas' : tablaId;
+        cols = cols === undefined ? ['puntos', 'fechaCreacion', 'usuario.nombreUsuario'] : cols;
         utils.peticionAjax('/api/results/user/' + usuarioId, 'GET', {},
             function (respuesta) {
                 console.log(respuesta.resultados);
-                utils.limpiarTabla('#lineas');
+                utils.limpiarTabla(tablaId);
                 $('#lineas').removeClass('hdn');
-                utils.rellenarTabla(respuesta.resultados, ['puntos', 'fechaCreacion', 'usuario.nombreUsuario'], '#lineas');
+                utils.rellenarTabla(respuesta.resultados, cols, tablaId);
             },
             function (respuesta) {
-                utils.mostrarAlerta('No se han podido recuperar las puntuaciones del usuario ' + usuarioId);
+                utils.mostrarAlerta('No se han podido recuperar las puntuaciones para el usuario');
             }, sessionStorage.getItem('token'));
     } else {
         utils.mostrarAlerta('Al menos debes seleccionar un usuario');
@@ -238,7 +257,7 @@ FrontEndUtils.prototype.altaRegistro = function (url, objeto, refreshFn) {
             }
         },
         function (respuesta) {
-            utils.mostrarAlerta('Ha habido un error al crear el registro (' + respuesta.status + ')')
+            utils.mostrarAlerta('Ha habido un error al crear el registro (' + respuesta.status + respuesta.message + ')')
         }, sessionStorage.getItem('token'));
 };
 
@@ -258,7 +277,6 @@ FrontEndUtils.prototype.actualizarRegistro = function (url, objeto, refreshFn) {
 };
 
 FrontEndUtils.prototype.eliminarRegistro = function (url, refreshFn) {
-    console.log(url);
     utils.peticionAjax(url, 'DELETE', {},
         function (respuesta) {
             refreshFn();
@@ -267,6 +285,16 @@ FrontEndUtils.prototype.eliminarRegistro = function (url, refreshFn) {
         function (respuesta) {
             utils.mostrarAlerta('No se ha podido dar de baja el registro (' + respuesta.status + ')');
         }, sessionStorage.getItem('token'));
+};
+
+FrontEndUtils.prototype.recuperarRegistro = function (url, params, doneFn){
+    utils.peticionAjax(url, 'GET', params,
+    function(respuesta){
+        doneFn(respuesta);
+    },
+    function(respuesta){
+        utils.mostrarAlerta('No se ha podido recuperar el registro (' + respuesta.status + ')');
+    }, sessionStorage.getItem('token'));
 };
 
 FrontEndUtils.prototype.prepararModalUpdate = function (modalId, id, url) {
@@ -331,10 +359,11 @@ FrontEndUtils.prototype.generarClonBoton = function (btnId, id) {
 
 FrontEndUtils.prototype.mostrarAlerta = function (texto, titulo) {
     titulo = titulo === undefined ? "Advertencia" : titulo;
+    $("body").find('#modalAdvertencia').remove();
     $("body").append($('<div class="ui modal" id="modalAdvertencia">')
         .append($('<div class="header">').append(titulo))
         .append($('<div class="content">').append(texto))
-        .append($('<div class="actions">').append($('<button type="button" class="ui positive button">').append('Aceptar'))));
+        .append($('<div class="actions">').append($('<button type="button" class="ui deny button">').append('Aceptar'))));
     $("#modalAdvertencia").modal('show');
 };
 

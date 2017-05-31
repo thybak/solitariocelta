@@ -91,7 +91,7 @@ class Utils
      * @param string $ruta
      * @return view
      */
-    public static function generarVistaAdministrador(string $ruta, $request){
+    public static function generarVistaUsuario(string $ruta, $request){
         return view($ruta)->with('usuarioAuth', $request->only('usuarioAuth')['usuarioAuth']);
     }
 }

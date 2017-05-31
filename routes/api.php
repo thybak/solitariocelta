@@ -27,6 +27,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get(RUTA_RESULTADOS, 'ResultadoController@obtenerTodos');
     Route::get(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@obtener')->where('resultado', '[0-9]+');
     Route::get(RUTA_RESULTADOS.'/user/{usuario}', 'ResultadoController@obtenerDeUsuario');
+    Route::get(RUTA_RESULTADOS.'/user/{usuario}/top5', 'ResultadoController@obtenerTop5DeUsuario');
     Route::post(RUTA_RESULTADOS, 'ResultadoController@crear');
     Route::put(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@actualizar');
     Route::delete(RUTA_RESULTADOS.'/{resultado}', 'ResultadoController@borrar');

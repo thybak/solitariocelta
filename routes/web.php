@@ -23,30 +23,36 @@ Route::get('/signup', function() {
 });
 Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/admin', function(Request $request) {
-        return Utils::generarVistaAdministrador('admin.portada', $request);
+        return Utils::generarVistaUsuario('admin.portada', $request);
     });
     Route::get('/admin/gestionarInactivos', function(Request $request){
-        return Utils::generarVistaAdministrador('admin.gestionarInactivos', $request);
+        return Utils::generarVistaUsuario('admin.gestionarInactivos', $request);
     });
     Route::get('/admin/gestionarUsuarios', function(Request $request){
-        return Utils::generarVistaAdministrador('admin.gestionarUsuarios', $request);
+        return Utils::generarVistaUsuario('admin.gestionarUsuarios', $request);
     });
     Route::get('/admin/gestionarPartidas', function(Request $request){
-        return Utils::generarVistaAdministrador('admin.gestionarPartidas', $request);
+        return Utils::generarVistaUsuario('admin.gestionarPartidas', $request);
     });
     Route::get('/admin/gestionarPuntuaciones', function(Request $request){
-        return Utils::generarVistaAdministrador('admin.gestionarPuntuaciones', $request);
+        return Utils::generarVistaUsuario('admin.gestionarPuntuaciones', $request);
     });
     Route::get('/admin/verTopPuntuaciones', function(Request $request){
-        return Utils::generarVistaAdministrador('admin.verTopPuntuaciones', $request);
+        return Utils::generarVistaUsuario('admin.verTopPuntuaciones', $request);
     });
     Route::get('/user', function (Request $request) {
-        return view('user.portada')->with('esAdmin', Utils::esTokenDeUsuarioAdmin($request->cookie('token')));
+        return Utils::generarVistaUsuario('user.portada', $request);
     });
-    Route::get('/user/perfil', function() {
-        return view('user.perfil');
+    Route::get('/user/perfil', function(Request $request) {
+        return Utils::generarVistaUsuario('user.perfil', $request);
     });
-    Route::get('/login', function (Request $request) {
+    Route::get('/user/puntuaciones', function(Request $request) {
+        return Utils::generarVistaUsuario('user.puntuaciones', $request);
+    });
+    Route::get('/user/juego', function(Request $request) {
+        return Utils::generarVistaUsuario('user.juego', $request);
+    });
+    Route::get('/login', function () {
         Cookie::queue('token', Input::get('token'), 0, "/", false);
         return redirect('/user');
     });
