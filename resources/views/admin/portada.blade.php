@@ -3,7 +3,7 @@
 @section('menu')
     <div class="ui attached stackable menu">
         <a class="item" href="/admin">
-            <h1 class="ui header"><i class="game icon"></i> Solitario celta (TDW 16-17) - Administración</h1>
+            <h1 class="ui header"><i class="key icon"></i> Administración</h1>
         </a>
         <a class="item" href="{!! url('/admin/gestionarInactivos') !!}">
             <i class="unlock icon"></i> Gestión usuarios inactivos
@@ -20,9 +20,12 @@
         <a class="item" href="{!! url('/admin/verTopPuntuaciones') !!}">
             <i class="trophy icon"></i> Ver ranking de puntuaciones
         </a>
-        <div class="item">
+        <a class="item" href="{!! url('/user') !!}">
             <i class="user icon"></i> Usuario: {!! $usuarioAuth->nombreUsuario !!}
-        </div>
+        </a>
+        <a class="item" onclick="utils.cerrarSesion()">
+            <i class="sign out icon"></i> Cerrar sesión
+        </a>
     </div>
 @endsection
 @section('cuerpo')

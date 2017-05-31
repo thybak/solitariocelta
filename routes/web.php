@@ -16,10 +16,19 @@ use \Illuminate\Support\Facades\Input;
 use \App\Models\Utils;
 
 Route::get('/', function () {
+    if (Cookie::get('token') !== null){
+        return redirect('/user');
+    }
     return view('login');
 });
 Route::get('/signup', function() {
+    if (Cookie::get('token') !== null){
+        return redirect('/user');
+    }
     return view('registro');
+});
+Route::get('/signout', function () {
+    return redirect('/')->withCookie(Cookie::forget('token'));
 });
 Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/admin', function(Request $request) {

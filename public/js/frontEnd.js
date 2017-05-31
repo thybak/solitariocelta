@@ -49,26 +49,30 @@ FrontEndUtils.prototype.ocultarCelda = function (oBtn) {
 };
 
 FrontEndUtils.prototype.login = function () {
-    var peticionLogin = {
-        nombreUsuario: $("#nombreUsuario").val(),
-        password: $("#password").val()
-    };
-    utils.peticionAjax('/api/login', 'POST', peticionLogin,
-        function (respuesta) {
-            if (respuesta.token !== undefined) {
-                sessionStorage.setItem('token', respuesta.token);
-                window.location.href = '/login?token=' + respuesta.token;
-            }
-        },
-        function (respuesta) {
-            if (respuesta.status === 500) {
-                utils.mostrarAlerta("No se ha podido iniciar sesión debido a un error interno en el servidor");
-            } else if (respuesta.status === 404) {
-                utils.mostrarAlerta("No se ha encontrado el usuario y contraseña introducidos");
-            } else if (respuesta.status === 403) {
-                utils.mostrarAlerta("El usuario está deshabilitado");
-            }
-        });
+    if ($("form").valid()) {
+        var peticionLogin = {
+            nombreUsuario: $("#nombreUsuario").val(),
+            password: $("#password").val()
+        };
+        utils.peticionAjax('/api/login', 'POST', peticionLogin,
+            function (respuesta) {
+                if (respuesta.token !== undefined) {
+                    sessionStorage.setItem('token', respuesta.token);
+                    window.location.href = '/login?token=' + respuesta.token;
+                }
+            },
+            function (respuesta) {
+                if (respuesta.status === 500) {
+                    utils.mostrarAlerta("No se ha podido iniciar sesión debido a un error interno en el servidor");
+                } else if (respuesta.status === 404) {
+                    utils.mostrarAlerta("No se ha encontrado el usuario y contraseña introducidos");
+                } else if (respuesta.status === 403) {
+                    utils.mostrarAlerta("El usuario está deshabilitado");
+                }
+            });
+    } else {
+        utils.mostrarAlerta('Revisa que hayas rellenado todos los campos obligatorios');
+    }
 };
 
 FrontEndUtils.prototype.activarDesactivarUsuario = function (id, activar, doneFn, argsDoneFn) {
@@ -201,7 +205,7 @@ FrontEndUtils.prototype.getPuntuacionesDeUsuario = function (usuarioId, tablaId,
     } else {
         utils.mostrarAlerta('Al menos debes seleccionar un usuario');
     }
-}
+};
 
 FrontEndUtils.prototype.getPartidas = function () {
     utils.peticionAjax('/api/matches', 'GET', {},
@@ -223,7 +227,14 @@ FrontEndUtils.prototype.getPartidas = function () {
 };
 
 FrontEndUtils.prototype.registro = function () {
-    if ($("#password").val() === $("#passwordConfirmation").val()) {
+    $("form").validate({
+        rules: {
+            passwordConfirmation:{
+                equalTo: '#password'
+            }
+        }
+    });
+    if ($("form").valid()) {
         var peticionRegistro = {
             nombreUsuario: $("#nombreUsuario").val(),
             email: $("#email").val(),
@@ -243,6 +254,8 @@ FrontEndUtils.prototype.registro = function () {
                 }
                 console.log(respuesta.status);
             }, sessionStorage.getItem('token'));
+    } else {
+        utils.mostrarAlerta('Revisa que has rellenado todos los campos obligatorios y que el formato del email es correcto');
     }
 };
 
@@ -363,7 +376,7 @@ FrontEndUtils.prototype.mostrarAlerta = function (texto, titulo) {
     $("body").append($('<div class="ui modal" id="modalAdvertencia">')
         .append($('<div class="header">').append(titulo))
         .append($('<div class="content">').append(texto))
-        .append($('<div class="actions">').append($('<button type="button" class="ui deny button">').append('Aceptar'))));
+        .append($('<div class="actions">').append($('<button type="button" class="ui deny green button">').append('Aceptar'))));
     $("#modalAdvertencia").modal('show');
 };
 
@@ -382,6 +395,11 @@ FrontEndUtils.prototype.crearSelectUsuarios = function (selectId) {
             utils.mostrarAlerta('Ha habido un error recuperando los usuarios');
         }, sessionStorage.getItem('token'));
 
+};
+
+FrontEndUtils.prototype.cerrarSesion = function(){
+  sessionStorage.clear();
+  location.href='/signout';
 };
 
 utils = new FrontEndUtils();

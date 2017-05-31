@@ -27,29 +27,35 @@
                 </div>
                 <div class="field">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" value="{{$usuarioAuth->email}}"/>
+                    <input type="email" id="email" value="{{$usuarioAuth->email}}" required/>
                 </div>
                 <div class="field">
                     <label for="telefono">Teléfono:</label>
                     <input type="text" id="telefono" maxlength="9" size="9" value="{{$usuarioAuth->telefono}}"/>
                 </div>
-                <button class="ui button" type="button" onclick="actualizarUsuario()"><i class="refresh icon"></i> Actualizar perfil</button>
+                <button class="ui button" type="button" onclick="actualizarUsuario()"><i class="refresh icon"></i>
+                    Actualizar perfil
+                </button>
             </form>
         </div>
     </div>
     <script>
         function actualizarUsuario() {
-            var usuario = {
-                nombre: $("#nombre").val(),
-                apellidos: $("#apellidos").val(),
-                email: $("#email").val(),
-                telefono: $("#telefono").val()
-            };
-            var password = $("#password").val();
-            if (password !== "") {
-                usuario.password = password;
+            if ($('form').valid()) {
+                var usuario = {
+                    nombre: $("#nombre").val(),
+                    apellidos: $("#apellidos").val(),
+                    email: $("#email").val(),
+                    telefono: $("#telefono").val()
+                };
+                var password = $("#password").val();
+                if (password !== "") {
+                    usuario.password = password;
+                }
+                utils.actualizarRegistro('/api/users/' + $("#id").val(), usuario);
+            } else {
+                utils.mostrarAlerta('Revisa que has facilitado correctamente el email');
             }
-            utils.actualizarRegistro('/api/users/' + $("#id").val(), usuario);
         }
 
     </script>

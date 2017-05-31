@@ -8,6 +8,8 @@
     <script src="{{ URL::asset('js/jquery-3.2.0.min.js') }}"></script>
     <script src="{{ URL::asset('js/datepicker.min.js') }}"></script>
     <script src="{{ URL::asset('js/semantic.min.js') }}"></script>
+    <script src="{{ URL::asset('js/jquery.validate.js') }}"></script>
+    <script src="{{ URL::asset('js/localization/messages_es.js') }}"></script>
     <script src="{{ URL::asset('js/frontEnd.js') }}"></script>
 </head>
 <body>

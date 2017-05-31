@@ -22,12 +22,15 @@
         <div class="item">
             <i class="user icon"></i> Usuario: {!! $usuarioAuth->nombreUsuario !!}
         </div>
+        <a class="item" onclick="utils.cerrarSesion()">
+            <i class="sign out icon"></i> Cerrar sesión
+        </a>
     </div>
 @endsection
 @section('cuerpo')
     <div class="container">
         <div class="ui segment">
-            <h2>Bienvenido a SolitarioCelta</h2>
+            <h2>Bienvenid@ a SolitarioCelta @if ($usuarioAuth -> nombre !== "") {{', '.$usuarioAuth->nombre}} @endif</h2>
             <p>Desde esta vista podrás acceder a: </p>
             <ul>
                 <li>Tu perfil</li>
