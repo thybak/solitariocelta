@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "TDW17 User REST api",
-    "description": "[UPM] TDW17 User REST api operations",
+    "title": "TDW17 SolitarioCelta API",
+    "description": "[UPM] TDW17 SolitarioCelta REST api operations",
     "version": "0.1.0"
   },
   "host": "localhost:8000",
