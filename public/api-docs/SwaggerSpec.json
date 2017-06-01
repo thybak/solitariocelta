@@ -5,7 +5,7 @@
     "description": "[UPM] TDW17 User REST api operations",
     "version": "0.1.0"
   },
-  "host": "localhost:8081",
+  "host": "localhost:8000",
   "basePath": "/api",
   "schemes": [
     "http",
@@ -21,28 +21,19 @@
     "/login": {
       "post": {
         "tags": [
-          "login"
+          "Login"
         ],
         "summary": "Returns TDW Users api token",
         "description": "Returns TDW Users api token.",
         "operationId": "tdw_post_login",
         "parameters": [
           {
-            "name": "email",
-            "in": "formData",
-            "description": "Email",
-            "allowEmptyValue": false,
+            "name": "login",
+            "in": "body",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "formData",
-            "description": "User password",
-            "allowEmptyValue": false,
-            "required": true,
-            "type": "string",
-            "format": "password"
+            "schema": {
+              "$ref": "#/definitions/LoginData"
+            }
           }
         ],
         "responses": {
@@ -141,12 +132,7 @@
               "$ref": "#/definitions/Message"
             }
           }
-        },
-        "security": [
-          {
-            "ResultsSecurity": []
-          }
-        ]
+        }
       },
       "options": {
         "tags": [
@@ -162,17 +148,17 @@
         }
       }
     },
-    "/users/{userId}": {
+    "/users/{id}": {
       "get": {
         "tags": [
           "Users"
         ],
         "summary": "Returns a user based on a single ID",
-        "description": "Returns the user identified by `userId`.",
+        "description": "Returns the user identified by `id`.",
         "operationId": "tdw_get_users",
         "parameters": [
           {
-            "$ref": "#/parameters/userId"
+            "$ref": "#/parameters/id"
           }
         ],
         "responses": {
@@ -203,11 +189,11 @@
           "Users"
         ],
         "summary": "Updates a user",
-        "description": "Updates the user identified by `userId`.",
+        "description": "Updates the user identified by `id`.",
         "operationId": "tdw_put_users",
         "parameters": [
           {
-            "$ref": "#/parameters/userId"
+            "$ref": "#/parameters/id"
           },
           {
             "name": "data",
@@ -253,11 +239,11 @@
           "Users"
         ],
         "summary": "Deletes a user",
-        "description": "Deletes the user identified by `userId`.",
+        "description": "Deletes the user identified by `id`.",
         "operationId": "tdw_delete_users",
         "parameters": [
           {
-            "$ref": "#/parameters/userId"
+            "$ref": "#/parameters/id"
           }
         ],
         "responses": {
@@ -289,9 +275,706 @@
         "operationId": "tdw_options_users_id",
         "parameters": [
           {
-            "$ref": "#/parameters/userId"
+            "$ref": "#/parameters/id"
           }
         ],
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/users/deshabilitados": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Returns all disabled users",
+        "description": "Returns all disabled users from the system that the user has access to.",
+        "operationId": "tdw_cget_dis_users",
+        "responses": {
+          "200": {
+            "description": "User array response",
+            "schema": {
+              "$ref": "#/definitions/UsersArray"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_cget_dis_users_op",
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/results": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Returns all results",
+        "description": "Returns all results from the system that the user has access to.",
+        "operationId": "tdw_cget_results",
+        "responses": {
+          "200": {
+            "description": "Result array response",
+            "schema": {
+              "$ref": "#/definitions/ResultsArray"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Creates a new result",
+        "description": "Creates a new result",
+        "operationId": "tdw_post_results",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "`Results` properties to add to the system",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Results"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "`Created` Result created",
+            "schema": {
+              "$ref": "#/definitions/Results"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "422": {
+            "description": "`Unprocessable entity` usuarioId or puntos is left out",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "500": {
+            "$ref": "#/responses/500_Internal_Error"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_options_results",
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/results/{id}": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Returns a result based on a single ID",
+        "description": "Returns the result identified by `id`.",
+        "operationId": "tdw_get_results",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result",
+            "schema": {
+              "$ref": "#/definitions/Results"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Updates a result",
+        "description": "Updates the result identified by `id`.",
+        "operationId": "tdw_put_results",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "`Result` data to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Results"
+            }
+          }
+        ],
+        "responses": {
+          "209": {
+            "description": "`Content Returned` Result previously existed and is now updated",
+            "schema": {
+              "$ref": "#/definitions/Results"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Deletes result",
+        "description": "Deletes the result identified by `id`.",
+        "operationId": "tdw_delete_results",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Result deleted <Response body is empty>"
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_options_results_id",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/results/user/{id}": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Returns results based on a usuarioId",
+        "description": "Returns the results identified by `id` associated to the usuarioId.",
+        "operationId": "tdw_get_us_results",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Results",
+            "schema": {
+              "$ref": "#/definitions/ResultsArray"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_options_us_results",
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/results/user/{id}/top5": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Returns top 5 results based on a usuarioId",
+        "description": "Returns the top 5 results identified by `id` associated to the usuarioId.",
+        "operationId": "tdw_get_us_t5_results",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Results",
+            "schema": {
+              "$ref": "#/definitions/ResultsArray"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_options_us_t5_results",
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/results/top10": {
+      "post": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Returns the top 10 results",
+        "description": "Returns the top 10 results between two dates",
+        "operationId": "tdw_post_results_t10",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "The date range to search the top 10 results",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RangeDate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The top 10 results",
+            "schema": {
+              "$ref": "#/definitions/ResultsArray"
+            }
+          },
+          "400": {
+            "description": "`Bad Request` Las fechas no se han introducido correctamente.",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "500": {
+            "$ref": "#/responses/500_Internal_Error"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_p_options_results_t10",
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/matches": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Returns all matches",
+        "description": "Returns all matches from the system that the user has access to.",
+        "operationId": "tdw_cget_matches",
+        "responses": {
+          "200": {
+            "description": "Result array response",
+            "schema": {
+              "$ref": "#/definitions/MatchesArray"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Creates a new match",
+        "description": "Creates a new match",
+        "operationId": "tdw_post_matches",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "`Matches` properties to add to the system",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Matches"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "`Created` Match created",
+            "schema": {
+              "$ref": "#/definitions/Matches"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "422": {
+            "description": "`Unprocessable entity` usuarioId or estadoJson is left out",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "500": {
+            "$ref": "#/responses/500_Internal_Error"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_options_matches",
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/matches/{id}": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Returns a match based on a single ID",
+        "description": "Returns the match identified by `id`.",
+        "operationId": "tdw_get_matches",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Match",
+            "schema": {
+              "$ref": "#/definitions/Matches"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Updates a match",
+        "description": "Updates the match identified by `id`.",
+        "operationId": "tdw_put_matches",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "`Match` data to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Matches"
+            }
+          }
+        ],
+        "responses": {
+          "209": {
+            "description": "`Content Matches` Match previously existed and is now updated",
+            "schema": {
+              "$ref": "#/definitions/Results"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Deletes match",
+        "description": "Deletes the match identified by `id`.",
+        "operationId": "tdw_delete_matches",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Match deleted <Response body is empty>"
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_options_matches_id",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`Allow` header <Response body is empty>"
+          }
+        }
+      }
+    },
+    "/matches/user/{id}": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Returns matches based on a usuarioId",
+        "description": "Returns the matches identified by `id` associated to the usuarioId.",
+        "operationId": "tdw_get_us_matches",
+        "parameters": [
+          {
+            "$ref": "#/parameters/id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matches",
+            "schema": {
+              "$ref": "#/definitions/MatchesArray"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/401_Standard_Response"
+          },
+          "403": {
+            "$ref": "#/responses/403_Forbidden_Response"
+          },
+          "404": {
+            "$ref": "#/responses/404_Resource_Not_Found_Response"
+          }
+        },
+        "security": [
+          {
+            "ResultsSecurity": []
+          }
+        ]
+      },
+      "options": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "tdw_get_us_matches_op",
         "responses": {
           "200": {
             "description": "`Allow` header <Response body is empty>"
@@ -321,6 +1004,18 @@
           "description": "User email",
           "type": "string"
         },
+        "nombre": {
+          "description": "Nombre",
+          "type": "string"
+        },
+        "apellidos": {
+          "description": "Apellidos",
+          "type": "string"
+        },
+        "telefono": {
+          "description": "Teléfono",
+          "type": "integer"
+        },
         "habilitado": {
           "description": "Denotes if user is enabled",
           "type": "boolean"
@@ -348,6 +1043,18 @@
           "description": "User email",
           "type": "string"
         },
+        "nombre": {
+          "description": "Nombre",
+          "type": "string"
+        },
+        "apellidos": {
+          "description": "Apellidos",
+          "type": "string"
+        },
+        "telefono": {
+          "description": "Teléfono",
+          "type": "integer"
+        },
         "password": {
           "description": "User password",
           "type": "string",
@@ -365,9 +1072,60 @@
       "example": {
         "nombreUsuario": "User_name",
         "email": "User_email@example.com",
+        "nombre": "Pepe",
+        "apellidos": "Los",
+        "telefono": "666666666",
         "password": "User_password",
         "habilitado": true,
         "esAdmin": false
+      }
+    },
+    "Results": {
+      "required": [
+        "usuarioId",
+        "puntos"
+      ],
+      "properties": {
+        "id": {
+          "description": "Identificador de resultado",
+          "type": "integer"
+        },
+        "puntos": {
+          "description": "Puntuación",
+          "type": "integer"
+        },
+        "fechaCreacion": {
+          "description": "Fecha de creación",
+          "type": "string"
+        },
+        "usuarioId": {
+          "description": "Identificador del usuario asociado al registro",
+          "type": "integer"
+        }
+      }
+    },
+    "Matches": {
+      "required": [
+        "usuarioId",
+        "estadoJson"
+      ],
+      "properties": {
+        "id": {
+          "description": "Identificador de partida",
+          "type": "integer"
+        },
+        "estadoJson": {
+          "description": "JSON del estado de la partida escapado",
+          "type": "string"
+        },
+        "fechaCreacion": {
+          "description": "Fecha de creación",
+          "type": "string"
+        },
+        "usuarioId": {
+          "description": "Identificador del usuario asociado al registro",
+          "type": "integer"
+        }
       }
     },
     "UsersArray": {
@@ -378,6 +1136,62 @@
           "items": {
             "$ref": "#/definitions/User"
           }
+        }
+      }
+    },
+    "ResultsArray": {
+      "properties": {
+        "resultados": {
+          "description": "Results array",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Results"
+          }
+        }
+      }
+    },
+    "MatchesArray": {
+      "properties": {
+        "partidas": {
+          "description": "Matches array",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Matches"
+          }
+        }
+      }
+    },
+    "RangeDate": {
+      "required": [
+        "fechaInicio",
+        "fechaFin"
+      ],
+      "properties": {
+        "fechaInicio": {
+          "description": "Fecha de inicio",
+          "type": "string",
+          "format": "mm/dd/yyyy"
+        },
+        "fechaFin": {
+          "description": "Fecha de fin",
+          "type": "string",
+          "format": "mm/dd/yyyy"
+        }
+      }
+    },
+    "LoginData": {
+      "required": [
+        "nombreUsuario",
+        "password"
+      ],
+      "properties": {
+        "nombreUsuario": {
+          "description": "Nombre de usuario",
+          "type": "string"
+        },
+        "password": {
+          "description": "Contraseña del usuario",
+          "type": "string"
         }
       }
     },
@@ -404,10 +1218,10 @@
     }
   },
   "parameters": {
-    "userId": {
-      "name": "userId",
+    "id": {
+      "name": "id",
       "in": "path",
-      "description": "ID of user",
+      "description": "Entity ID",
       "required": true,
       "type": "integer",
       "format": "int32"
@@ -431,6 +1245,12 @@
       "schema": {
         "$ref": "#/definitions/Message"
       }
+    },
+    "500_Internal_Error": {
+      "description": "`Internal Error` An internal error has occurred after requesting the resource",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
     }
   },
   "securityDefinitions": {
@@ -442,12 +1262,20 @@
   },
   "tags": [
     {
-      "name": "login",
+      "name": "Login",
       "description": "user login"
     },
     {
       "name": "Users",
       "description": "User management"
+    },
+    {
+      "name": "Results",
+      "description": "Result management"
+    },
+    {
+      "name": "Matches",
+      "description": "Matches management"
     }
   ]
 }
