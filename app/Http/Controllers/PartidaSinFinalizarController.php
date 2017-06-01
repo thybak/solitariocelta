@@ -37,7 +37,7 @@ class PartidaSinFinalizarController extends Controller
             return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
         if ($partidaDB = PartidaSinFinalizar::where('usuarioId', '=', $usuarioId)->first()) {
-            return $this->actualizar($partidaDB->id, $request); // en caso de que ya exista vamos a sobreescribirla
+            return $this->actualizar($partidaDB->id, $request); // en caso de que ya exista vamos a sobrescribirla
         }
         $partida = new PartidaSinFinalizar();
         $partida->fill($partidaPost);
@@ -109,9 +109,6 @@ class PartidaSinFinalizarController extends Controller
      */
     public function actualizar(Int $partida, Request $request)
     {
-        if (!Utils::usuarioLogeadoEsAdmin()) {
-            return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
-        }
         $partidaDB = PartidaSinFinalizar::find($partida);
         if (!$partidaDB) {
             return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);

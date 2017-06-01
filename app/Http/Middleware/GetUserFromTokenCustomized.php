@@ -14,7 +14,7 @@ class GetUserFromTokenCustomized extends BaseMiddleware
     const ERROR_401_SUBTIPO = ['(ausencia de token de sesión)', '(token expirado)', '(token inválido)'];
 
     /**
-     * Fire event and return the response. (Sobreescrito)
+     * Fire event and return the response. (Sobrescrito)
      *
      * @param  string $event
      * @param  string $error

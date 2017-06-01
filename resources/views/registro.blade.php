@@ -7,7 +7,7 @@
             <div class="six wide column">
                 <h1 class="txt-center pdn-top-25p">@yield('titulo')</h1>
                 <div class="ui divider"></div>
-                <div class="ui segment">
+                <div class="ui segment" id="formRegistro">
                     <div class="ui message"><i class="info icon"></i> Para tu registro sólo necesitamos de un usuario, una contraseña y un email.
                         Sin embargo, antes de poder hacer uso del sistema, un usuario administrador deberá habilitar tu
                         cuenta de usuario.
@@ -32,6 +32,9 @@
                         <a class="ui button" href="/"><i class="arrow left icon"></i> Atrás</a>
                         <button type="button" class="ui button" onclick="utils.registro()"><i class="add user icon"></i> ¡Regístrate!</button>
                     </form>
+                </div>
+                <div class="ui message hdn" id="postRegistro">
+                    ¡Enhorabuena, ya te has dado de alta! ¿Por qué no pruebas a <a href="/">iniciar sesión</a>?
                 </div>
             </div>
             <div class="five wide column"></div>

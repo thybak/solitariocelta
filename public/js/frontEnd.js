@@ -244,6 +244,8 @@ FrontEndUtils.prototype.registro = function () {
             function (respuesta) {
                 if (respuesta !== undefined && respuesta.id > 0) {
                     utils.mostrarAlerta('El alta del usuario se ha realizado con éxito. El siguiente paso es que un administrador valide tu cuenta');
+                    $("#formRegistro").hide();
+                    $("#postRegistro").removeClass('hdn');
                 }
             },
             function (respuesta) {

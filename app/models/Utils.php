@@ -8,6 +8,8 @@
 
 namespace App\Models;
 
+use Tymon\JWTAuth\Exceptions\JWTException;
+
 class Utils
 {
     const ERROR_500 = ['code' => 500, 'message' => 'Error interno, no se ha podido procesar la petición'];
@@ -23,12 +25,15 @@ class Utils
      * Devuelve el usuario que está autenticado actualmente a partir del token de sesión haciendo uso de la fachada JWTAuth
      * @return Usuario
      */
-    public static function obtenerUsuarioLogeado(): Usuario
+    public static function obtenerUsuarioLogeado()
     {
+        $usuario = null;
         try {
-            return \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
-        } catch (Exception $e){return null;}
+            $usuario = \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {}
+        return $usuario;
     }
+
     /**
      * Determina si el usuario tiene permisos suficientes para realizar una operación
      * @param Int $id
@@ -39,6 +44,7 @@ class Utils
         $usuarioLogeado = Utils::obtenerUsuarioLogeado();
         return $usuarioLogeado != null && $usuarioLogeado->habilitado && ($usuarioLogeado->esAdmin || ($usuarioLogeado->id == $id));
     }
+
     /**
      * Determina si el usuario autenticado es administrador o no
      * @return bool
@@ -46,7 +52,7 @@ class Utils
     public static function usuarioLogeadoEsAdmin(): bool
     {
         $usuarioLogeado = Utils::obtenerUsuarioLogeado();
-        return $usuarioLogeado != null && $usuarioLogeado -> esAdmin && $usuarioLogeado -> habilitado;
+        return $usuarioLogeado != null && $usuarioLogeado->esAdmin && $usuarioLogeado->habilitado;
     }
 
     /**
@@ -65,12 +71,14 @@ class Utils
      * @param string $token
      * @return bool
      */
-    public static function esTokenDeUsuarioAdmin(string $token): bool {
+    public static function esTokenDeUsuarioAdmin(string $token): bool
+    {
         $usuarioDB = null;
         try {
             $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
-        } catch (Exception $e){}
-        return $usuarioDB != null && $usuarioDB -> esAdmin && $usuarioDB -> habilitado;
+        } catch (Exception $e) {
+        }
+        return $usuarioDB != null && $usuarioDB->esAdmin && $usuarioDB->habilitado;
     }
 
     /**
@@ -78,12 +86,14 @@ class Utils
      * @param string $token
      * @return bool
      */
-    public static function esTokenDeUsuarioHabilitado(string $token){
+    public static function esTokenDeUsuarioHabilitado(string $token)
+    {
         $usuarioDB = null;
         try {
             $usuarioDB = \Tymon\JWTAuth\Facades\JWTAuth::authenticate($token);
-        } catch (Exception $e){}
-        return $usuarioDB != null && $usuarioDB -> habilitado;
+        } catch (Exception $e) {
+        }
+        return $usuarioDB != null && $usuarioDB->habilitado;
     }
 
     /**
@@ -91,7 +101,8 @@ class Utils
      * @param string $ruta
      * @return view
      */
-    public static function generarVistaUsuario(string $ruta, $request){
+    public static function generarVistaUsuario(string $ruta, $request)
+    {
         return view($ruta)->with('usuarioAuth', $request->only('usuarioAuth')['usuarioAuth']);
     }
 }
