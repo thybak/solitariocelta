@@ -48,7 +48,9 @@
                 </div>
                 <div class="field new">
                     <label for="usuarioId">Identificador de usuario: </label>
-                    <input type="text" id="usuarioId" />
+                    <select id="usuarioId">
+                        <option>Selecciona un usuario</option>
+                    </select>
                 </div>
             </form>
         </div>
@@ -78,7 +80,10 @@
         </div>
     </div>
     <script>
-        document.onload = utils.getPartidas();
+        function cargarVistaPartidas(){
+            utils.getPartidas();
+            utils.crearSelectUsuarios('#usuarioId');
+        }
         function gestionarPartida(nuevo) {
             var partida = {
                 estadoJson: $("#estadoJson").val()
@@ -91,5 +96,6 @@
                 utils.altaRegistro('/api/matches', partida, utils.getPartidas);
             }
         }
+        document.onload = cargarVistaPartidas();
     </script>
 @endsection

@@ -30,7 +30,7 @@
 @section('cuerpo')
     <div class="container">
         <div class="ui segment">
-            <h2>Bienvenid@ a SolitarioCelta @if ($usuarioAuth -> nombre !== "") {{', '.$usuarioAuth->nombre}} @endif</h2>
+            <h2>Bienvenid@ a SolitarioCelta</h2>
             <p>Desde esta vista podrás acceder a: </p>
             <ul>
                 <li>Tu perfil</li>

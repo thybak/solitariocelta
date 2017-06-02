@@ -5,6 +5,12 @@ function FrontEndUtils() {
 /**
  * Método de auxilio para abstraer las llamadas AJAX de JQuery, recibiendo todos los parámetros necesarios para ello: url, metodo, parámetro, funciones de callback y el token de sesión
  * El token de sesión es necesario para autenticar las peticiones contra el API.
+ * @param url
+ * @param method
+ * @param params
+ * @param doneFn
+ * @param failFn
+ * @param token
  */
 FrontEndUtils.prototype.peticionAjax = function (url, method, params, doneFn, failFn, token) {
     var peticion =
@@ -25,6 +31,9 @@ FrontEndUtils.prototype.peticionAjax = function (url, method, params, doneFn, fa
 
 /**
  * Método que pasada una fila y una columna, distingue si tiene un punto en el nombre de columna, lo que indica que hay un subnivel de entidad
+ * @param row
+ * @param col
+ * @returns {void|*|jQuery}
  */
 FrontEndUtils.prototype.crearColumna = function (row, col) {
     var splitCols = col.split('.');
@@ -37,6 +46,9 @@ FrontEndUtils.prototype.crearColumna = function (row, col) {
 
 /**
  * Método que pasado el array de filas y columnas, además del identificador de la tabla, es capaz de mostrar dichos registros en el cuerpo de la tabla
+ * @param rows
+ * @param cols
+ * @param id
  */
 FrontEndUtils.prototype.rellenarTabla = function (rows, cols, id) {
     for (var idx = 0; idx < rows.length; idx++) {
@@ -50,6 +62,7 @@ FrontEndUtils.prototype.rellenarTabla = function (rows, cols, id) {
 
 /**
  * Método que pasado el identificador de la tabla es capaz de eliminar el cuerpo dejando solamente la cabecera
+ * @param id
  */
 FrontEndUtils.prototype.limpiarTabla = function (id) {
     $(id).find('tbody').find('tr').each(function () {
@@ -59,6 +72,7 @@ FrontEndUtils.prototype.limpiarTabla = function (id) {
 
 /**
  * Método que pasado un botón, es capaz de ocultar la fila entera de la columna de la tabla en que está contenido
+ * @param oBtn
  */
 FrontEndUtils.prototype.ocultarCelda = function (oBtn) {
     $(oBtn).parent().parent().hide('slow');
@@ -96,6 +110,10 @@ FrontEndUtils.prototype.login = function () {
 
 /**
  * Método de atajo para actualizar el usuario desde la vista de gestión de inactivos de la administración y activarlo de cara a que puedan acceder al sistema
+ * @param id
+ * @param activar
+ * @param doneFn
+ * @param argsDoneFn
  */
 FrontEndUtils.prototype.activarDesactivarUsuario = function (id, activar, doneFn, argsDoneFn) {
     var peticionPut = {
@@ -164,6 +182,7 @@ FrontEndUtils.prototype.getTop10 = function () {
 
 /**
  * Método que obtiene el top 5 de resultados de un usuario en concreto para insertarlo en la vista de puntuaciones de usuarios
+ * @param usuarioId
  */
 FrontEndUtils.prototype.getTop5DeUsuario = function (usuarioId) {
     if (usuarioId > 0) {
@@ -194,6 +213,8 @@ FrontEndUtils.prototype.getUsuarios = function () {
                     var modifyDiv = $('<div>').append(utils.generarClonBoton('#btnModificarTemplate', respuesta.usuarios[idx].id));
                     modifyDiv.append(utils.generarClonBoton('#btnEliminarTemplate', respuesta.usuarios[idx].id));
                     respuesta.usuarios[idx]['modify'] = modifyDiv;
+                    respuesta.usuarios[idx]['habilitado'] = utils.getSiONo(respuesta.usuarios[idx]['habilitado']);
+                    respuesta.usuarios[idx]['esAdmin'] = utils.getSiONo(respuesta.usuarios[idx]['esAdmin']);
                     utils.rellenarTabla([respuesta.usuarios[idx]], ['nombreUsuario', 'email', 'nombre', 'apellidos', 'telefono', 'habilitado', 'esAdmin', 'modify'], '#lineas');
                 }
 
@@ -227,6 +248,9 @@ FrontEndUtils.prototype.getPuntuaciones = function () {
 
 /**
  * Método que obtiene las puntuaciones de un usuario pasado por parámetro para una tabla cuyo identificador también es otro de los parámetros
+ * @param usuarioId
+ * @param tablaId
+ * @param cols
  */
 FrontEndUtils.prototype.getPuntuacionesDeUsuario = function (usuarioId, tablaId, cols) {
     if (usuarioId > 0) {
@@ -309,6 +333,9 @@ FrontEndUtils.prototype.registro = function () {
 
 /**
  * Método genérico para dar de alta registros según la url y la instancia. En caso de éxito se llama a la función de callback del parámetro.
+ * @param url
+ * @param objeto
+ * @param refreshFn
  */
 FrontEndUtils.prototype.altaRegistro = function (url, objeto, refreshFn) {
     utils.peticionAjax(url, 'POST', objeto,
@@ -327,6 +354,9 @@ FrontEndUtils.prototype.altaRegistro = function (url, objeto, refreshFn) {
 
 /**
  * Método genérico para actualizar registros con la misma filosofía del método anterior.
+ * @param url
+ * @param objeto
+ * @param refreshFn
  */
 FrontEndUtils.prototype.actualizarRegistro = function (url, objeto, refreshFn) {
     utils.peticionAjax(url, 'PUT', objeto,
@@ -345,6 +375,8 @@ FrontEndUtils.prototype.actualizarRegistro = function (url, objeto, refreshFn) {
 
 /**
  * Método genérico para eliminar registros con la misma filosofía del método anterior.
+ * @param url
+ * @param refreshFn
  */
 FrontEndUtils.prototype.eliminarRegistro = function (url, refreshFn) {
     utils.peticionAjax(url, 'DELETE', {},
@@ -359,6 +391,9 @@ FrontEndUtils.prototype.eliminarRegistro = function (url, refreshFn) {
 
 /**
  * Método genérico para obtener registros con la misma filosofía del método anterior.
+ * @param url
+ * @param params
+ * @param doneFn
  */
 FrontEndUtils.prototype.recuperarRegistro = function (url, params, doneFn) {
     utils.peticionAjax(url, 'GET', params,
@@ -372,6 +407,9 @@ FrontEndUtils.prototype.recuperarRegistro = function (url, params, doneFn) {
 
 /**
  * Método que prepara el diálogo modal que se abre desde la administración cuando desde cualquiera de las gestiones se decide actualizar un registro accionando el botón de editar
+ * @param modalId
+ * @param id
+ * @param url
  */
 FrontEndUtils.prototype.prepararModalUpdate = function (modalId, id, url) {
     $(modalId).find('form')[0].reset();
@@ -401,6 +439,8 @@ FrontEndUtils.prototype.prepararModalUpdate = function (modalId, id, url) {
 
 /**
  * Método que muestra el diálogo modal que se abre desde la administración cuando desde cualquiera de las gestiones se decide crear un registro accionando el botón de añadir
+ * @param modalId
+ * @param esNuevo
  */
 FrontEndUtils.prototype.mostrarModalRegistro = function (modalId, esNuevo) {
     $(modalId).find('.new').each(function () {
@@ -425,6 +465,8 @@ FrontEndUtils.prototype.mostrarModalRegistro = function (modalId, esNuevo) {
 
 /**
  * Método que prepara el diálogo modal que se abre desde la administración cuando desde cualquiera de las gestiones se decide eliminar un registro accionando el botón de eliminar
+ * @param modalId
+ * @param id
  */
 FrontEndUtils.prototype.prepararModalDelete = function (modalId, id) {
     $("#id").val(id);
@@ -433,6 +475,9 @@ FrontEndUtils.prototype.prepararModalDelete = function (modalId, id) {
 
 /**
  * Método que se encarga de clonar los botones plantilla de las vistas de administración que sirven para editar o eliminar registros
+ * @param btnId
+ * @param id
+ * @returns {*|jQuery}
  */
 FrontEndUtils.prototype.generarClonBoton = function (btnId, id) {
     var $btn = $(btnId).clone();
@@ -444,6 +489,8 @@ FrontEndUtils.prototype.generarClonBoton = function (btnId, id) {
 
 /**
  * Método para mostrar alertas estilizadas haciendo uso de los diálogos modales de Semantic UI con un texto y título pasado por parámetro
+ * @param texto
+ * @param titulo
  */
 FrontEndUtils.prototype.mostrarAlerta = function (texto, titulo) {
     titulo = titulo === undefined ? "Advertencia" : titulo;
@@ -457,6 +504,7 @@ FrontEndUtils.prototype.mostrarAlerta = function (texto, titulo) {
 
 /**
  * Método que se encarga de, pasado el identificador de un selectList, rellenarlo con todas las opciones de usuarios que hay en el sistema
+ * @param selectId
  */
 FrontEndUtils.prototype.crearSelectUsuarios = function (selectId) {
     utils.peticionAjax('/api/users', 'GET', {},
@@ -481,6 +529,15 @@ FrontEndUtils.prototype.crearSelectUsuarios = function (selectId) {
 FrontEndUtils.prototype.cerrarSesion = function () {
     sessionStorage.clear();
     location.href = '/signout';
+};
+
+/**
+ * Obtiene un literal sí o no del valor booleano
+ * @param valorBoolean
+ * @returns {string}
+ */
+FrontEndUtils.prototype.getSiONo = function (valorBoolean){
+  return valorBoolean === 1 ? 'Sí' : 'No';
 };
 
 utils = new FrontEndUtils();

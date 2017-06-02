@@ -25,7 +25,7 @@
                     <th>Apellidos</th>
                     <th>Teléfono</th>
                     <th>Activo</th>
-                    <th>¿Administrador?</th>
+                    <th>Administrador</th>
                     <th></th>
                 </tr>
                 </thead>
