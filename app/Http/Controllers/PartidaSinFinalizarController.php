@@ -109,12 +109,12 @@ class PartidaSinFinalizarController extends Controller
      */
     public function actualizar(Int $partida, Request $request)
     {
-        if (!Utils::checkPermisos($request->input('usuarioId'))){
-            return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
-        }
         $partidaDB = PartidaSinFinalizar::find($partida);
         if (!$partidaDB) {
             return response()->json(Utils::ERROR_404, Utils::ERROR_404['code']);
+        }
+        if (!Utils::checkPermisos($partidaDB -> usuarioId)){
+            return response()->json(Utils::ERROR_403, Utils::ERROR_403['code']);
         }
         if (!$partidaDB->update($request->input())) {
             return response()->json(Utils::ERROR_500, Utils::ERROR_500['code']);
