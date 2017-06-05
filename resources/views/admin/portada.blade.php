@@ -1,25 +1,37 @@
 @extends('layouts.app')
 @section ('titulo', 'Portada de administración')
 @section('menu')
-    <div class="ui attached stackable menu">
+    <div class="ui six item menu">
         <a class="item" href="/admin">
             <h1 class="ui header"><i class="key icon"></i> Administración</h1>
         </a>
-        <a class="item" href="{!! url('/admin/gestionarInactivos') !!}">
-            <i class="unlock icon"></i> Gestión usuarios inactivos
-        </a>
-        <a class="item" href="{!! url('/admin/gestionarUsuarios') !!}">
-            <i class="user icon"></i> Gestión usuarios
-        </a>
+        <div class="ui simple dropdown item">
+            Usuarios
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="{!! url('/admin/gestionarInactivos') !!}">
+                    <i class="unlock icon"></i> Gestión usuarios inactivos
+                </a>
+                <a class="item" href="{!! url('/admin/gestionarUsuarios') !!}">
+                    <i class="user icon"></i> Gestión usuarios
+                </a>
+            </div>
+        </div>
         <a class="item" href="{!! url('/admin/gestionarPartidas') !!}">
             <i class="archive icon"></i> Gestión partidas
         </a>
-        <a class="item" href="{!! url('/admin/gestionarPuntuaciones') !!}">
-            <i class="archive icon"></i> Gestión puntuaciones
-        </a>
-        <a class="item" href="{!! url('/admin/verTopPuntuaciones') !!}">
-            <i class="trophy icon"></i> Ver ranking de puntuaciones
-        </a>
+        <div class="ui simple dropdown item">
+            Puntuaciones
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="{!! url('/admin/gestionarPuntuaciones') !!}">
+                    <i class="archive icon"></i> Gestión puntuaciones
+                </a>
+                <a class="item" href="{!! url('/admin/verTopPuntuaciones') !!}">
+                    <i class="trophy icon"></i> Ver ranking de puntuaciones
+                </a>
+            </div>
+        </div>
         <a class="item" href="{!! url('/user') !!}">
             <i class="user icon"></i> Usuario: {!! $usuarioAuth->nombreUsuario !!}
         </a>

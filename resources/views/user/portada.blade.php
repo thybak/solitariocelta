@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('titulo', 'Portada usuario')
 @section('menu')
-    <div class="ui attached stackable menu">
+    <div class="ui {{$usuarioAuth -> esAdmin ? "seven" : "six"}} item menu">
         <a class="item" href="/user">
             <h1 class="ui header"><i class="game icon"></i> Solitario celta (TDW 16-17)</h1>
         </a>
