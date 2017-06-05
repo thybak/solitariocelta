@@ -3,7 +3,7 @@
 @section('menu')
     <div class="ui {{$usuarioAuth -> esAdmin ? "seven" : "six"}} item menu">
         <a class="item" href="/user">
-            <h1 class="ui header"><i class="game icon"></i> Solitario celta (TDW 16-17)</h1>
+            <h1 class="ui header"><i class="game icon"></i> Solitario celta</h1>
         </a>
         <a class="item" href="{!! url('/user/perfil') !!}">
             <i class="user icon"></i> Modificar perfil
